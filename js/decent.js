@@ -65,8 +65,12 @@ var DecentJS = function(scope) {
 			request.onreadystatechange = function() {
 				if ( 4 == request.readyState ) {
 					request.onreadystatechange = function() {};
-					if ( 200 <= request.status && 300 > request.status || ( 'undefined' == typeof request.status ) )
-						callback(request.responseText);
+					if ( 200 <= request.status && 300 > request.status || ( 'undefined' == typeof request.status ) ) {
+						if (JSON.parse && request.getResponseHeader && 'application/json' == request.getResponseHeader('content-type'))
+							callback(JSON.parse(request.responseText));
+						else
+							callback(request.responseText);
+					}
 				}
 			}
 			request.send(dataString);
