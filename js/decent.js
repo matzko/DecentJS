@@ -1,4 +1,11 @@
 var DecentJS = function(scope) {
+	/**
+	 * Attach an event listener to the given DOM element.
+	 *
+	 * @param [DOMElement] obj  The DOM object to which we attach the event listener.
+	 * @param [string]     type The event for which we will listen.
+	 * @param [function]   fn   The callback invoked when the event occurs.  The callback receives the Event object as its parameter.
+	 */
 	var addEvent = function( obj, type, fn ) {
 		if (obj.addEventListener)
 			obj.addEventListener(type, fn, false);
