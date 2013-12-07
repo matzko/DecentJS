@@ -460,12 +460,7 @@ var DecentJS = function(scope) {
 					if ( target.className && re.exec( target.className ) ) {
 						result = callback.call( target, e );	
 						if ( ! result ) {
-							if ( e.stopPropagation )
-								e.stopPropagation();
-							if ( e.preventDefault )
-								e.preventDefault();
-							e.cancelBubble = true;
-							e.returnValue = false;
+							eventHalt(e)
 							return false;
 						} else {
 							return true;
@@ -477,7 +472,108 @@ var DecentJS = function(scope) {
 			});
 		})(className, callback, parentEl);
 	},
-	
+
+	/**
+	 * Capture the values of the given form when submitted; stop its submission, and pass the values to the given callback.
+	 *
+	 * @param [DOMElement] form The form to capture.
+	 * @param [function]   fn   The callback.
+	 */
+	attachFormListener = function(form, callback) {
+		var clickedEl = null,
+		listener = function(e) {
+			eventHalt(e);
+			callback.call(form, getFormData(form,clickedEl), e);
+		}
+		addEvent(form, 'submit', listener);
+		addEvent(form, 'click', function(e) {
+			clickedEl = getEventTarget(e);
+		});
+	},
+
+	/**
+	 * Get the default button for the given form.
+	 *
+	 * According to the HTML5 spec, a form's default button is 
+	 * "is the first submit button in tree order whose form owner is that form element."
+	 * <http://dev.w3.org/html5/spec-preview/constraints.html>
+	 * And "The term tree order means a pre-order, depth-first traversal of DOM nodes involved (through the parentNode/childNodes relationship)."
+	 * <http://dev.w3.org/html5/spec-preview/infrastructure.html#tree-order>
+	 *
+	 * @param [form] form The form for which to get the default button.
+	 * @return [DOMElement] The default submit button, or null if none.
+	 **/
+	getDefaultSubmitButton = function(form) {
+		var getTreeOrder = function(el, parentEl) {
+			var x = 0, y = 0;
+			while(el && el.parentNode !== null && el.parentNode !== false && el.parentNode != parentEl) {
+				while(el && el.previousSibling !== null && el.previousSibling !== false && el.previousSibling != parentEl) {
+					x++;
+					el = el.previousSibling;
+				}
+				if (el) {
+					y++;
+					el = el.parentNode;
+				}
+			}
+			return {x:x,y:y};
+		},
+		buttons = form.getElementsByTagName('button'),
+		inputs = form.getElementsByTagName('input'),
+		i = inputs.length, j = buttons.length, 
+		objType = '',
+		submits = [],
+		defaultButtonOrder, candidateOrder,
+		defaultButton = null;
+		
+		while (i--) {
+			if (inputs[i]) {
+				if ('submit' == ( inputs[i].type + '' ).toLowerCase()) {
+					submits[submits.length] = inputs[i];
+				}
+			}
+		}
+		while (j--) {
+			if (buttons[j]) {
+				submits[submits.length] = buttons[j];
+			}
+		}
+		i = submits.length;
+		while(i--) {
+			if (null === defaultButton) {
+				defaultButton = submits[i];
+			} else if (defaultButton != submits[i]) {
+				if (!defaultButtonOrder) {
+					defaultButtonOrder = getTreeOrder(defaultButton,form);
+				}
+				candidateOrder = getTreeOrder(submits[i],form);
+				if (
+					(candidateOrder.y < defaultButtonOrder.y)
+					|| (
+						(candidateOrder.y == defaultButtonOrder.y)
+						&& (candidateOrder.x < defaultButtonOrder.x)
+					)
+				) {
+					defaultButton = submits[i];
+				}
+			}
+		}
+		return defaultButton;
+	},
+
+	/**
+	 * Stop event propagation and default behavior for the given event.
+	 *
+	 * @param [Event] evt The event to halt.
+	 */
+	eventHalt = function(evt) {
+		if ( evt.stopPropagation )
+			evt.stopPropagation();
+		if ( evt.preventDefault )
+			evt.preventDefault();
+		evt.cancelBubble = true;
+		evt.returnValue = false;
+	},
 	/**
 	 * End custom event handlers
 	 */
@@ -509,6 +605,8 @@ var DecentJS = function(scope) {
 		addEvent:addEvent,
 		Animation:Animation,
 		attachClassClickListener:attachClassClickListener, 
+		attachFormListener:attachFormListener,
+		eventHalt:eventHalt,
 		doWhenReady:ready,
 		fade:fade,
 		getCookie:getCookie,
