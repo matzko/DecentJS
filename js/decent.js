@@ -51,7 +51,7 @@ var DecentJS = function(scope) {
 	 * @callback The method to call upon success
 	 */
 	postReq = function(url, data, callback) {
-		url = url || 'admin-ajax.php';
+		url = url || '';
 		data = data || {};
 		var dataString, request = new XHR;
 		dataString = serialize(data);
@@ -160,8 +160,7 @@ var DecentJS = function(scope) {
 	 * @param [DOMElement] clickTarget The item whose click submitted the form, if any.
 	 */
 	getFormData = function(form, clickTarget) {
-		if (!clickTarget)
-			clickTarget = getDefaultSubmitButton(form);
+		clickTarget = clickTarget || getDefaultSubmitButton(form);
 		if ( ! form )
 			return {};
 		var elTypes = ['input', 'select', 'textarea'],
@@ -169,8 +168,7 @@ var DecentJS = function(scope) {
 		objType, 
 		data  = {},
 		fields,
-		fieldValue,
-		submitButtons = [];
+		fieldValue;
 
 		if (clickTarget) {
 			if (clickTarget.type && clickTarget.name && clickTarget.value && ('submit' == (clickTarget.type + '' ).toLowerCase())) {
@@ -477,7 +475,7 @@ var DecentJS = function(scope) {
 	 * Capture the values of the given form when submitted; stop its submission, and pass the values to the given callback.
 	 *
 	 * @param [DOMElement] form The form to capture.
-	 * @param [function]   fn   The callback.
+	 * @param [function]   fn   The callback, which recieves the format data as its first parameter, the event object as the second, and the form DOMElement as -this-.
 	 */
 	attachFormListener = function(form, callback) {
 		var clickedEl = null,
@@ -521,7 +519,6 @@ var DecentJS = function(scope) {
 		buttons = form.getElementsByTagName('button'),
 		inputs = form.getElementsByTagName('input'),
 		i = inputs.length, j = buttons.length, 
-		objType = '',
 		submits = [],
 		defaultButtonOrder, candidateOrder,
 		defaultButton = null;
