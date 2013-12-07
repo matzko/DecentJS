@@ -152,19 +152,39 @@ var DecentJS = function(scope) {
 	},
 
 	/**
+	 * Get the form data.
+	 *
 	 * @todo better handling of different elements
-	 * @todo better handling of diff submit buttons, for example
+	 *
+	 * @param [DOMElement] form The form for which to get the data.
+	 * @param [DOMElement] clickTarget The item whose click submitted the form, if any.
 	 */
-	getFormData = function(form) {
+	getFormData = function(form, clickTarget) {
+		if (!clickTarget)
+			clickTarget = getDefaultSubmitButton(form);
 		if ( ! form )
 			return {};
-		var elTypes = [ 'button', 'input', 'select', 'textarea' ],
+		var elTypes = ['input', 'select', 'textarea'],
 		i, j = elTypes.length, k = 0,
 		objType, 
 		data  = {},
 		fields,
-		fieldValue;
+		fieldValue,
+		submitButtons = [];
 
+		if (clickTarget) {
+			if (clickTarget.type && clickTarget.name && clickTarget.value && ('submit' == (clickTarget.type + '' ).toLowerCase())) {
+				_setValueFromInputName.call(data, clickTarget.name, clickTarget.value);
+			} else if (('button' == clickTarget.nodeName.toLowerCase()) && clickTarget.name) {
+				if ( clickTarget.getAttribute('value') ) {
+					_setValueFromInputName.call(data, clickTarget.name, clickTarget.getAttribute('value'));
+				} else if ( clickTarget.value ) {
+					_setValueFromInputName.call(data, clickTarget.name, clickTarget.value);
+				} else if ( clickTarget.innerText || clickTarget.textContent ) {
+					_setValueFromInputName.call(data, clickTarget.name, ( clickTarget.innerText || clickTarget.textContent ) );
+				}
+			}
+		}
 		while ( j-- ) {
 			fields = form.getElementsByTagName( elTypes[j] );
 			i = fields.length;
@@ -189,23 +209,13 @@ var DecentJS = function(scope) {
 						} else if ( fields[i].value ) {
 							_setValueFromInputName.call(data, fields[i].name, fields[i].value);
 						}
-					} else if ( 'button' == fields[i].nodeName.toLowerCase() ) {
-						if ( fields[i].name ) {
-							if ( fields[i].getAttribute('value') ) {
-								_setValueFromInputName.call(data, fields[i].name, fields[i].getAttribute('value'));
-							} else if ( fields[i].value ) {
-								_setValueFromInputName.call(data, fields[i].name, fields[i].value);
-							} else if ( fields[i].innerText || fields[i].textContent ) {
-								_setValueFromInputName.call(data, fields[i].name, ( fields[i].innerText || fields[i].textContent ) );
-							}
-						}
 					} else if ( 'checkbox' == objType ) {
 						if ( fields[i].checked ) {
 							_setValueFromInputName.call(data, fields[i].name, fields[i].value);
 						}
 					} else if (
 						! objType || 
-						'radio' != objType ||
+						(('submit' != objType) && ('radio' != objType)) ||
 						( 
 							'radio' == objType &&
 							fields[i].checked 
@@ -216,7 +226,7 @@ var DecentJS = function(scope) {
 				}
 			}
 		}
-		return data;	
+		return data;
 	},
 
 
