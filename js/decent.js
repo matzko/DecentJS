@@ -61,6 +61,7 @@ var DecentJS = function(scope) {
 			}
 			request.open('POST', url, true);
 			request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 			request.onreadystatechange = function() {
 				if ( 4 == request.readyState ) {
 					request.onreadystatechange = function() {};
