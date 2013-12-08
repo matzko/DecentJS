@@ -6,7 +6,7 @@ var DecentJS = function(scope) {
 	 * @param [string]     type The event for which we will listen.
 	 * @param [function]   fn   The callback invoked when the event occurs.  The callback receives the Event object as its parameter.
 	 */
-	var addEvent = function( obj, type, fn ) {
+	var attachListener = function( obj, type, fn ) {
 		if (obj.addEventListener)
 			obj.addEventListener(type, fn, false);
 		else if (obj.attachEvent)
@@ -46,22 +46,33 @@ var DecentJS = function(scope) {
 
 	/**
 	 * Post a xhr request
-	 * @param url The url to which to post
-	 * @data The associative array of data to post, or a string of already-encoded data
-	 * @callback The method to call upon success
+	 * @param [String]   url      The url to which to post
+	 * @param [object]   data     The associative array of data to post, or a string of already-encoded data.
+	 * @param [function] callback The function to call upon success.
+	 * @param [String]   method   Optional. The type of request to make, such as GET, PUT, POST or DELETE. Default is "POST"
+	 * @param [object]   headers  Optional. Headers to send with the request. 
 	 */
-	postReq = function(url, data, callback) {
+	ajax = function(url, data, callback, method, headers) {
 		url = url || '';
 		data = data || {};
-		var dataString, request = new XHR;
-		dataString = serialize(data);
+		method = method || 'POST';
+		headers = headers || {};
+		var baseHeaders = {'Content-Type':'application/x-www-form-urlencoded','X-Requested-With':'XMLHttpRequest'},
+		dataString = serialize(data),
+		i,
+		request = new XHR;
+
+		for (i in headers)
+			baseHeaders[i] = headers[i];
+
 		try {
 			if ( 'undefined' == typeof callback ) {
 				callback = function() {};
 			}
-			request.open('POST', url, true);
-			request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+			request.open(method, url, true);
+			for (i in baseHeaders) {
+				request.setRequestHeader(i,baseHeaders[i]);
+			}
 			request.onreadystatechange = function() {
 				if ( 4 == request.readyState ) {
 					request.onreadystatechange = function() {};
@@ -455,7 +466,7 @@ var DecentJS = function(scope) {
 
 		(function(className, callback, parentEl) {
 			var re = new RegExp( '\\b' + className + '\\b' );
-			addEvent( parentEl, 'click', function(e) {
+			attachListener( parentEl, 'click', function(e) {
 				var result = true, 
 				target = getEventTarget(e);
 				do {
@@ -487,8 +498,8 @@ var DecentJS = function(scope) {
 			eventHalt(e);
 			callback.call(form, getFormData(form,clickedEl), e);
 		}
-		addEvent(form, 'submit', listener);
-		addEvent(form, 'click', function(e) {
+		attachListener(form, 'submit', listener);
+		attachListener(form, 'click', function(e) {
 			clickedEl = getEventTarget(e);
 		});
 	},
@@ -587,8 +598,8 @@ var DecentJS = function(scope) {
 	ready = function( callback ) {
 		if ( callback )
 			loadedCallback = callback;
-		addEvent(d, 'DOMContentLoaded', eventDOMLoaded );
-		addEvent(w, 'load', eventDOMLoaded );
+		attachListener(d, 'DOMContentLoaded', eventDOMLoaded );
+		attachListener(w, 'load', eventDOMLoaded );
 	},
 	
 	initialized = false,
@@ -603,7 +614,7 @@ var DecentJS = function(scope) {
 	}	
 
 	return {
-		addEvent:addEvent,
+		attachListener:attachListener,
 		Animation:Animation,
 		attachClassClickListener:attachClassClickListener, 
 		attachFormListener:attachFormListener,
@@ -614,7 +625,7 @@ var DecentJS = function(scope) {
 		getEventTarget:getEventTarget,
 		getFormData:getFormData,
 		isObjProperty:isObjProp,
-		postReq:postReq,
+		ajax:ajax,
 		scrollToElement:scrollToElement,
 		setCookie:setCookie
 	}
