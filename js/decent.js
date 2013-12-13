@@ -1,4 +1,4 @@
-var DecentJS = function(scope) {
+(function(scope) {
 	/**
 	 * Attach an event listener to the given DOM element.
 	 *
@@ -11,6 +11,15 @@ var DecentJS = function(scope) {
 			obj.addEventListener(type, fn, false);
 		else if (obj.attachEvent)
 			obj.attachEvent('on' + type, function() { return fn.call(obj, w.event);});
+	},
+
+	/**
+	 * Set a JavaScript object to be the current subject of DecentJS
+	 *
+	 * @param [Object] subject The JavaScript that is the subject of our activity.
+	 */
+	DecentJS = function(subject) {
+		return new core(subject);
 	},
 
 	d = document,
@@ -611,22 +620,44 @@ var DecentJS = function(scope) {
 		initialized = true;
 
 		loadedCallback();
-	}	
+	},
 
-	return {
-		attachListener:attachListener,
-		Animation:Animation,
-		attachClassClickListener:attachClassClickListener, 
-		attachFormListener:attachFormListener,
-		eventHalt:eventHalt,
-		doWhenReady:ready,
-		fade:fade,
-		getCookie:getCookie,
-		getEventTarget:getEventTarget,
-		getFormData:getFormData,
-		isObjProperty:isObjProp,
-		ajax:ajax,
-		scrollToElement:scrollToElement,
-		setCookie:setCookie
+	core = function(subject) {
+		this.actionSubject = subject;
+	};
+	core.prototype.attachClassClickListener = function(className, callback) {
+		return attachClassClickListener(className, callback, this.actionSubject);
 	}
-}
+	core.prototype.attachListener = function(type, fn) {
+		return attachListener(this.actionSubject, type, fn);
+	}
+	core.prototype.attachFormListener = function(callback) {
+		return attachFormListener(this.actionSubject, callback);
+	}
+	core.prototype.fade = function(dir, callback) {
+		return fade(this.actionSubject, dir, callback);
+	}
+	core.prototype.getFormData = function(clickTarget) {
+		return getFormData(this.actionSubject, clickTarget);
+	}
+	core.prototype.scrollTo = function() {
+		return scrollToElement(this.actionSubject);
+	}
+
+	DecentJS.ajax = ajax;
+	DecentJS.core = core;
+	DecentJS.getCookie = getCookie;
+	DecentJS.setCookie = setCookie;
+	DecentJS.doWhenReady = ready;
+	DecentJS.eventHalt = eventHalt;
+	DecentJS.getEventTarget = getEventTarget;
+	DecentJS.isObjProperty = isObjProp;
+	DecentJS.Animation = Animation;
+	DecentJS.attachClassClickListener = attachClassClickListener;
+
+	DecentJS.methods = DecentJS.prototype = {
+		scrollToElement:scrollToElement,
+	}
+
+	scope.DecentJS = DecentJS;
+})(this);
