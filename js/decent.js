@@ -625,39 +625,70 @@
 	core = function(subject) {
 		this.actionSubject = subject;
 	};
+	core.prototype.doc = d;
+	core.prototype.win = w;
+	core.prototype.ajax = ajax;
+	core.prototype.gebid = function(id) {
+		return d.getElementById(id)
+	}
+	core.prototype.addClass = function(className) {
+		addClass(this.actionSubject, className);
+		return this;
+	}
+	core.prototype.hasClass = function(className) {
+		return hasClass(this.actionSubject, className);
+	}
+	core.prototype.removeClass = function(className) {
+		removeClass(this.actionSubject, className);
+		return this;
+	}
+	core.prototype.getCookie = getCookie;
+	core.prototype.setCookie = function(name, value, days) {
+		setCookie(name, value, days);
+		return this;
+	}
+	core.prototype.doWhenReady = ready;
+	core.prototype.eventHalt = eventHalt;
+	core.prototype.stopDefault = stopDefault;
+	core.prototype.getEventTarget = getEventTarget;
+	core.prototype.isObjProperty = isObjProp;
+
 	core.prototype.attachClassClickListener = function(className, callback) {
-		return attachClassClickListener(className, callback, this.actionSubject);
+		attachClassClickListener(className, callback, this.actionSubject);
+		return this;
 	}
 	core.prototype.attachListener = function(type, fn) {
-		return attachListener(this.actionSubject, type, fn);
+		attachListener(this.actionSubject, type, fn);
+		return this;
 	}
 	core.prototype.attachFormListener = function(callback) {
-		return attachFormListener(this.actionSubject, callback);
+		attachFormListener(this.actionSubject, callback);
+		return this;
 	}
 	core.prototype.fade = function(dir, callback) {
-		return fade(this.actionSubject, dir, callback);
+		fade(this.actionSubject, dir, callback);
+		return this;
 	}
 	core.prototype.getFormData = function(clickTarget) {
 		return getFormData(this.actionSubject, clickTarget);
 	}
 	core.prototype.scrollTo = function() {
-		return scrollToElement(this.actionSubject);
+		scrollToElement(this.actionSubject);
+		return this;
 	}
 
 	DecentJS.ajax = ajax;
 	DecentJS.core = core;
 	DecentJS.getCookie = getCookie;
-	DecentJS.setCookie = setCookie;
+	DecentJS.setCookie = function(name, value, days) {
+		setCookie(name, value, days);
+		return DecentJS;
+	}
 	DecentJS.doWhenReady = ready;
 	DecentJS.eventHalt = eventHalt;
 	DecentJS.getEventTarget = getEventTarget;
 	DecentJS.isObjProperty = isObjProp;
 	DecentJS.Animation = Animation;
-	DecentJS.attachClassClickListener = attachClassClickListener;
-
-	DecentJS.methods = DecentJS.prototype = {
-		scrollToElement:scrollToElement,
-	}
 
 	scope.DecentJS = DecentJS;
 })(this);
