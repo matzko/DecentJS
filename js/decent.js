@@ -480,12 +480,11 @@
 			return false;
 
 		(function(className, callback, parentEl) {
-			var re = new RegExp( '\\b' + className + '\\b' );
 			attachListener( parentEl, 'click', function(e) {
 				var result = true, 
 				target = getEventTarget(e);
 				do {
-					if ( target.className && re.exec( target.className ) ) {
+					if ( target.className && hasClass(target, className) ) {
 						result = callback.call( target, e );	
 						if ( ! result ) {
 							eventHalt(e)
@@ -606,6 +605,41 @@
 	 */
 
 	/**
+	 * Add a class to a DOMElement
+	 *
+	 * @param [DOMElement] el        The DOM element to modify.
+	 * @param [String]     className The class to add.
+	 */
+	addClass = function(el, className) {
+		removeClass(el, className);
+		el.className += ' ' + className;
+	},
+
+	/**
+	 * Whether the element has the given class.
+	 *
+	 * @param [DOMElement] el        The DOM element in question.
+	 * @param [String]     className The class to check for.
+	 *
+	 * @return [boolean] Whether the given element has that class.
+	 */
+	hasClass = function(el, className) {
+		var re = new RegExp('\\b' + className + '\\b');
+		return !! re.exec('' + el.className);
+	},
+
+	/**
+	 * Remove a class from a DOMElement.
+	 *
+	 * @param [DOMElement] el
+	 * @param [String]     className
+	 */
+	removeClass = function(el, className) {
+		var re = new RegExp('(\\s+)?\\b' + className + '\\b(\\s+)?','g');
+		el.className = (el.className + '').replace(re,' ').replace(new RegExp('^\\s+'),'').replace(new RegExp('\\s+$'), '');
+	},
+
+	/**
 	 * Ready a callback for whichever occurs first: DOMContentLoaded or window.onload
 	 *
 	 * @param function callback The callback to call at that event.
@@ -685,6 +719,9 @@
 
 	DecentJS.ajax = ajax;
 	DecentJS.core = core;
+	DecentJS.addClass = addClass;
+	DecentJS.hasClass = hasClass;
+	DecentJS.removeClass = removeClass;
 	DecentJS.getCookie = getCookie;
 	DecentJS.setCookie = function(name, value, days) {
 		setCookie(name, value, days);
