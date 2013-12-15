@@ -86,10 +86,16 @@
 				if ( 4 == request.readyState ) {
 					request.onreadystatechange = function() {};
 					if ( 200 <= request.status && 300 > request.status || ( 'undefined' == typeof request.status ) ) {
-						if (JSON.parse && request.getResponseHeader && 'application/json' == request.getResponseHeader('content-type'))
-							callback(JSON.parse(request.responseText));
-						else
+						if (request.getResponseHeader && (new RegExp('^application/json','i')).exec(request.getResponseHeader('content-type'))) {
+							if (scope.JSON) {
+								callback(scope.JSON.parse(request.responseText));
+							} else {
+								// Not a great way to parse JSON, but better than nothing in older browsers
+								callback(eval('(' + request.responseText + ')'));
+							}
+						} else {
 							callback(request.responseText);
+						}
 					}
 				}
 			}
