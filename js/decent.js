@@ -509,7 +509,7 @@
 	attachFormListener = function(form, callback) {
 		var clickedEl = null,
 		listener = function(e) {
-			eventHalt(e);
+			stopDefault(e);
 			callback.call(form, getFormData(form,clickedEl), e);
 		}
 		attachListener(form, 'submit', listener);
@@ -595,9 +595,13 @@
 	eventHalt = function(evt) {
 		if ( evt.stopPropagation )
 			evt.stopPropagation();
+		evt.cancelBubble = true;
+		stopDefault(evt);
+	},
+
+	stopDefault = function(evt) {
 		if ( evt.preventDefault )
 			evt.preventDefault();
-		evt.cancelBubble = true;
 		evt.returnValue = false;
 	},
 	/**
@@ -718,6 +722,9 @@
 	}
 
 	DecentJS.ajax = ajax;
+	DecentJS.attachListener = attachListener;
+	DecentJS.attachClassClickListener = attachClassClickListener;
+	DecentJS.gebid = core.prototype.gebid;
 	DecentJS.core = core;
 	DecentJS.addClass = addClass;
 	DecentJS.hasClass = hasClass;
@@ -729,6 +736,7 @@
 	}
 	DecentJS.doWhenReady = ready;
 	DecentJS.eventHalt = eventHalt;
+	DecentJS.stopDefault = stopDefault;
 	DecentJS.getEventTarget = getEventTarget;
 	DecentJS.isObjProperty = isObjProp;
 	DecentJS.Animation = Animation;
