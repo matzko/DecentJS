@@ -686,6 +686,15 @@
 		removeClass(this.actionSubject, className);
 		return this;
 	}
+	/**
+	 * Pass the action subject to a callback.
+	 *
+	 * @param [function] callback The callback to which we pass the action subject.
+	 */
+	core.prototype.invoke = function(callback,args) {
+		args = args || [];
+		return callback.apply(this.actionSubject, args);
+	}
 	core.prototype.getCookie = getCookie;
 	core.prototype.setCookie = function(name, value, days) {
 		setCookie(name, value, days);
