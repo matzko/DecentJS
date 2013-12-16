@@ -117,7 +117,9 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			selectionLinks[linkId] = (i + 1);
 			list.appendChild(item);
 		}
-		showList();
+		if (0 < matchingData.length) {
+			showList();
+		}
 	},
 	makeListItem = function(textValue, id) {
 		var content = djs.doc.createTextNode(textValue),
@@ -321,6 +323,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			ghost.className = (subject.className ? subject.className : '') + ' ghost-fill';
 			container.insertBefore(ghost, subject);
 		}
+		hideList();
 		container.appendChild(list);
 	}
 }
