@@ -650,20 +650,23 @@
 	 */
 	ready = function( callback ) {
 		if ( callback )
-			loadedCallback = callback;
+			loadedCallbacks[loadedCallbacks.length] = callback;
 		attachListener(d, 'DOMContentLoaded', eventDOMLoaded );
 		attachListener(w, 'load', eventDOMLoaded );
 	},
 	
 	initialized = false,
-	loadedCallback = function() {},
+	loadedCallbacks = [function() {}],
 	eventDOMLoaded = function() {
+		var i;
 		if ( initialized ) {
 			return false;
 		}
 		initialized = true;
 
-		loadedCallback();
+		for (i = 0; i < loadedCallbacks.length; i++) {
+			loadedCallbacks[i]();
+		}
 	},
 
 	core = function(subject) {
