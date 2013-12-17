@@ -25,7 +25,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			})(subject.value)
 		);
 	},
-	listIsHidden = false;
+	listIsHidden = false,
 	hideList = function() {
 		list.style.display = 'none';
 		listIsHidden = true;
