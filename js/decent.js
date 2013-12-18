@@ -672,6 +672,7 @@
 	core = function(subject) {
 		this.actionSubject = subject;
 	};
+	core.prototype.log = scope.console && scope.console.log ? console.log : function() {};
 	core.prototype.doc = d;
 	core.prototype.win = w;
 	core.prototype.ajax = ajax;
