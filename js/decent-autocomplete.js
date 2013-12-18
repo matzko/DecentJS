@@ -316,7 +316,8 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 		djs.attachListener('keydown',eventKeydown);
 		djs.attachListener('keypress',eventKeypress);
 		djs.attachListener('keyup',eventKeyup);
-		d.attachListener(container, 'click',eventClickListItem);
+		// using mousedown instead of click, because it fires before the blur of the input
+		d.attachListener(container, 'mousedown',eventClickListItem);
 		if (coreOptions['ghostFill']) {
 			ghost.disabled = true;
 			ghost.type = subject.type ? subject.type : 'text';
