@@ -665,7 +665,7 @@
 		initialized = true;
 
 		for (i = 0; i < loadedCallbacks.length; i++) {
-			loadedCallbacks[i]();
+			loadedCallbacks[i].call(this,DecentJS);
 		}
 	},
 
