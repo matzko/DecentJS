@@ -231,9 +231,9 @@
 							}
 							_setValueFromInputName.call(data, fields[i].name, fieldValue);
 						}
-					} else if ( 'select' == fields[i].name ) {
+					} else if ('select-one' == objType) {
 						if ( fields[i].options && fields[i].options[fields[i].selectedIndex] ) {
-							_setValueFromInputName.call(data, fields[i].name, fields[i].options[fields[i].selectedIndex]);
+							_setValueFromInputName.call(data, fields[i].name, fields[i].options[fields[i].selectedIndex].value);
 						} else if ( fields[i].value ) {
 							_setValueFromInputName.call(data, fields[i].name, fields[i].value);
 						}
