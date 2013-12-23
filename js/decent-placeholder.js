@@ -3,6 +3,9 @@ if ('undefined' != typeof scope.DecentJS) {
 DecentJS.core.prototype.placeholder = function(options) {
 	options = options || {};
 	var d = DecentJS, djs = this, i, subject = djs.actionSubject,
+	coreOptions = {
+		wrapper:false
+	},
 	create = function(t) { return djs.doc.createElement(t)},
 	supportsInputPlaceholder = !! ('placeholder' in create('input')),
 	supportsTextareaPlaceholder = !! ('placeholder' in create('textarea')),
@@ -14,13 +17,18 @@ DecentJS.core.prototype.placeholder = function(options) {
 		if (!supportsInputPlaceholder && subject && subject.tagName && ('input' == subject.tagName.toLowerCase())) {
 			var placeholderValue = subject.getAttribute('placeholder'),
 			ghost = create('input'),
-			wrapper = create('span');
+			wrapper;
 			if (placeholderValue) {
-				wrapper.style.position = 'relative';
-				wrapper.style.display = 'block';
-				wrapper.style.height = subject.offsetHeight + 'px';
-				wrapper.style.width = subject.offsetWidth + 'px';
-				subject.parentNode.insertBefore(wrapper, subject);
+				if (coreOptions['wrapper']) {
+					wrapper = coreOptions['wrapper'];
+				} else {
+					wrapper = create('span');
+					wrapper.style.position = 'relative';
+					wrapper.style.display = 'block';
+					wrapper.style.height = subject.offsetHeight + 'px';
+					wrapper.style.width = subject.offsetWidth + 'px';
+					subject.parentNode.insertBefore(wrapper, subject);
+				}
 				wrapper.appendChild(subject);
 
 				ghost.disabled = true;
@@ -56,6 +64,9 @@ DecentJS.core.prototype.placeholder = function(options) {
 				});
 			}
 		}
+	};
+	for (i in options) {
+		coreOptions[i] = options[i];
 	}
 	init();
 }
