@@ -281,6 +281,9 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 			decent.addClass(option, 'faux-option');
 			fauxSelect.appendChild(option);
 			fauxSelect.fauxOptions[i] = option;
+			if (opts[i].selected) {
+				fauxSelect.fauxFocusedOption = i;
+			}
 		}
 		i = 0 < fauxSelect.fauxFocusedOption ? fauxSelect.fauxFocusedOption : 0; 
 		fauxSelect.fauxShowSelection(fauxSelect.fauxOptions[i] ? fauxSelect.fauxOptions[i].innerHTML : '');
