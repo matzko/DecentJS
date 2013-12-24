@@ -26,7 +26,7 @@ This will generate HTML for the faux select element and insert it before the act
 		<li class="faux-option" data-value="1">male</li>
 		<li class="faux-option" data-value="2">female</li>
 	</ul>
-	<span class="faux-selection-indicator">male</span>
+	<span class="faux-selection-indicator">Gender:</span>
 </div>
 <select class="faux-select-original" id="gender-select" name="gender">
 	<option value="">Gender:</option>
@@ -106,5 +106,19 @@ You can then use CSS to style the appearance of your faux select list.  Here is 
 
 .faux-unopened .faux-option {
 	position:absolute;
+}
+
+select.faux-select-original {
+	display:none !important;
+}
+
+/* Show the client-provided select elements for small-screen devices. */
+@media only screen and (max-width: 33.00em) {
+	select.faux-select-original {
+		display:block !important;
+	}
+	.faux-select-wrapper {
+		display:none;
+	}
 }
 ```
