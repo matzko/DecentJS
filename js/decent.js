@@ -742,6 +742,7 @@
 	DecentJS.addClass = addClass;
 	DecentJS.hasClass = hasClass;
 	DecentJS.removeClass = removeClass;
+	DecentJS.getFormData = getFormData;
 	DecentJS.getCookie = getCookie;
 	DecentJS.setCookie = function(name, value, days) {
 		setCookie(name, value, days);
