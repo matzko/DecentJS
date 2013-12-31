@@ -209,7 +209,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 			var onWrapper = false,
 			target = decent.getEventTarget(e);
 			do {
-				if (target && decent.hasClass(target, 'faux-select-wrapper')) {
+				if (target && target == selectWrapper) {
 					onWrapper = true;
 					break;
 				}
