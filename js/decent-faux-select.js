@@ -144,6 +144,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 				}
 				select.fauxFocusedOption = optionIndex;
 				select.fauxOptions[optionIndex].fauxSelected = true;
+				select.fauxOptions[optionIndex].fauxOriginal.selected = true;
 				select.fauxShowSelection(select.fauxOptions[optionIndex].innerHTML);
 				decent.addClass(select.fauxOptions[optionIndex],'faux-selected');
 				select.fauxSelectedOptions[select.fauxSelectedOptions.length] = optionIndex;
