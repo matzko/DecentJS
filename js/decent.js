@@ -735,6 +735,7 @@
 	}
 
 	DecentJS.ajax = ajax;
+	DecentJS.attachFormListener = attachFormListener;
 	DecentJS.attachListener = attachListener;
 	DecentJS.attachClassClickListener = attachClassClickListener;
 	DecentJS.gebid = core.prototype.gebid;
