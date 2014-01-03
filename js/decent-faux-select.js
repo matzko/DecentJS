@@ -134,7 +134,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 							decent.removeClass(select.fauxOptions[i], 'faux-selected');
 						}
 					}
-					if (select.fauxOptions[optionIndex].fauxOriginal && select.fauxOptions[optionIndex].fauxOriginal.value) {
+					if (select.fauxOptions[optionIndex].fauxOriginal) {
 						origValue = select.fauxOriginal.value;
 						select.fauxOriginal.value = select.fauxOptions[optionIndex].fauxOriginal.value;
 						if (origValue != select.fauxOriginal.value) {
