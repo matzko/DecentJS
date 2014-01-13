@@ -23,6 +23,7 @@ DecentJS.core.prototype.placeholder = function(options) {
 					wrapper = coreOptions['wrapper'];
 				} else {
 					wrapper = create('span');
+					wrapper.className = 'decent-placeholder-wrapper';
 					wrapper.style.position = 'relative';
 					wrapper.style.display = 'block';
 					wrapper.style.height = subject.offsetHeight + 'px';
