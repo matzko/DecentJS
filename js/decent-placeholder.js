@@ -70,6 +70,10 @@ DecentJS.core.prototype.placeholder = function(options) {
 		coreOptions[i] = options[i];
 	}
 	init();
+	return {
+		supportsInput:supportsInputPlaceholder,
+		supportText:supportsTextareaPlaceholder
+	}
 }
 }
 })(this);
