@@ -715,7 +715,9 @@
 		return this;
 	}
 	core.prototype.attachListener = function(type, fn) {
-		attachListener(this.actionSubject, type, fn);
+		if (this.actionSubject) {
+			attachListener(this.actionSubject, type, fn);
+		}
 		return this;
 	}
 	core.prototype.attachFormListener = function(callback) {
