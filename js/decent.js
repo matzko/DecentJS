@@ -121,19 +121,55 @@
 	 * @return string The serialized string.
 	 */
 	serialize = function(a) {
-		var i, j, s = [];
-		for( i in a ) {
-			if ( isObjProp(a, i) ) {
-				// if the object is an array itself
-				if ( '[]' == i.substr(i.length - 2, i.length) ) {
-					for ( j = 0; j < a[i].length; j++ ) {
-						s[s.length] = urlencode(i) + '=' + urlencode(a[i][j]);
+		var i, j, s = [],
+		/**
+		 * Collect multi-dimensional values into key-value pairs, in results (by reference)
+		 *
+		 * @param [Object] data    The possibly multi-dimensional data.
+		 * @param [Array]  results The array of strings of 'key=value' data.
+		 */
+		stringifyData = function(data, results) {
+			var getMultiLevelData = function(data, parents) {
+				var results = [], myparents, i, j, subResult;
+				for (i in data) {
+					if (DecentJS.isObjProperty(data, i)) {
+						myparents = parents.slice(0);
+						myparents[myparents.length] = i;
+						// if the object is an array itself
+						if ('[]' == i.substr(i.length - 2, i.length) ) {
+							for (j = 0; j < data[i].length; j++) {
+								results[results.length] = urlencode(i) + '=' + urlencode(data[i][j]);
+							}
+						} else if (null != data[i] && 'object' == typeof data[i]) {
+							subResult = getMultiLevelData(data[i], myparents);
+							for(j = 0; j < subResult.length; j++) {
+								results[results.length] = subResult[j];
+							}
+						} else {
+							results[results.length] = [data[i], myparents];
+						}
 					}
-				} else {
-					s[s.length] = urlencode(i) + '=' + urlencode(a[i]);
+				}
+				return results;
+			},
+			multiData = getMultiLevelData(data, []),
+			i, j, parents, keyText, valueText;
+			for (i = 0; i < multiData.length; i++) {
+				if (multiData[i][1]) {
+					valueText = multiData[i][0];
+					parents = multiData[i][1];
+					if (0 < parents.length) {
+						keyText = parents[0];
+						for(j = 1; j < parents.length; j++) {
+							keyText += '[' + parents[j] + ']';
+						}
+					}
+					results[results.length] = urlencode(keyText) + '=' + urlencode(valueText);
 				}
 			}
-		}
+		};
+
+		stringifyData(a, s);
 		return s.join('&');
 	},
 
