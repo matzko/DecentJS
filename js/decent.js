@@ -102,27 +102,6 @@
 			request.send(dataString);
 		} catch(e) {};
 	},
-
-	/**
-	 * Whether the one DOMElement has the other as an ancestor.
-	 *
-	 * @param [DOMElement] child    The possible descendant
-	 * @param [DOMElement] ancestor The possible ancestor
-	 *
-	 * @return [boolean] Whether child has ancestor as an ancestor.
-	 */
-	hasAncestor = function(child, ancestor) {
-		var isAncestor = false,
-		dad = child.parentNode;
-		while(dad) {
-			if (dad == ancestor) {
-				isAncestor = true;
-				break;
-			}
-			dad = dad.parentNode;
-		}
-		return isAncestor;
-	},
 	
 	/** 
 	 * Whether the property is of this particular object's
@@ -765,7 +744,6 @@
 	DecentJS.core = core;
 	DecentJS.addClass = addClass;
 	DecentJS.hasClass = hasClass;
-	DecentJS.hasAncestor = hasAncestor;
 	DecentJS.removeClass = removeClass;
 	DecentJS.getFormData = getFormData;
 	DecentJS.getCookie = getCookie;
