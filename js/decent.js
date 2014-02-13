@@ -199,11 +199,31 @@
 	 * Set the input value, even if that means a multi-dimensional object.
 	 */
 	_setValueFromInputName = function( name, value ) {
-		var match = /([^\[]*)\[([^\]]*)\]/.exec( name );	
-		if ( match && match[0] && match[1] && match[2] ) {
-			if ( ! this[match[1]] )
-				this[match[1]] = {};
-			this[match[1]][match[2]] = value;
+		var match = /([^\[]*)\[([^\]]*)\]/.exec(name);
+		if (match && match[0] && match[1] && match[2]) {
+			(function(name, value, results) {
+				var re = /([^\[]*)\[([^\]]*)\]/g,
+				match, parts = [], temp, i, x;
+				while ((match = re.exec(name)) !== null) {
+					if (match[1]) {
+						parts[parts.length] = match[1];
+					}
+					if (match[2]) {
+						parts[parts.length] = match[2];
+					}
+				}
+				x = results;
+				for (i = 0; i < parts.length; i++) {
+					if (i == (parts.length - 1)) {
+						x[parts[i]] = value;
+					} else {
+						if ('undefined' == typeof x[parts[i]]) {
+							x[parts[i]] = {};
+						}
+						x = x[parts[i]];
+					}
+				}
+			})(name, value, this);
 
 		// checkboxes with attributes like: name="myname[]"
 		} else if ( match && match[0] && match[1] && '' === match[2] ) {
