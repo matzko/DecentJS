@@ -85,17 +85,15 @@
 			request.onreadystatechange = function() {
 				if ( 4 == request.readyState ) {
 					request.onreadystatechange = function() {};
-					if ( 200 <= request.status && 300 > request.status || ( 'undefined' == typeof request.status ) ) {
-						if (request.getResponseHeader && (new RegExp('^application/json','i')).exec(request.getResponseHeader('content-type'))) {
-							if (scope.JSON) {
-								callback.call(request, scope.JSON.parse(request.responseText));
-							} else {
-								// Not a great way to parse JSON, but better than nothing in older browsers
-								callback.call(request, eval('(' + request.responseText + ')'));
-							}
+					if (request.getResponseHeader && (new RegExp('^application/json','i')).exec(request.getResponseHeader('content-type'))) {
+						if (scope.JSON) {
+							callback.call(request, scope.JSON.parse(request.responseText));
 						} else {
-							callback.call(request, request.responseText);
+							// Not a great way to parse JSON, but better than nothing in older browsers
+							callback.call(request, eval('(' + request.responseText + ')'));
 						}
+					} else {
+						callback.call(request, request.responseText);
 					}
 				}
 			}
