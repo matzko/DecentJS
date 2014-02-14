@@ -805,6 +805,7 @@
 		setCookie(name, value, days);
 		return DecentJS;
 	}
+	DecentJS.serialize = serialize;
 	DecentJS.doWhenReady = ready;
 	DecentJS.eventHalt = eventHalt;
 	DecentJS.stopDefault = stopDefault;
