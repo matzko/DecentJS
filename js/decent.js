@@ -269,8 +269,7 @@
 		}
 		while ( j-- ) {
 			fields = form.getElementsByTagName( elTypes[j] );
-			i = fields.length;
-			while ( i-- ) {
+			for(i = 0; i < fields.length; i++) {
 				if ( fields[i] && fields[i].name ) {
 					objType = ( fields[i].type + '' ).toLowerCase();
 					if ( 'select-multiple' == objType ) {
