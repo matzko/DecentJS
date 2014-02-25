@@ -35,14 +35,36 @@ DecentJS.core.prototype.placeholder = function(options) {
 				ghost.disabled = true;
 				ghost.type = (subject.type && 'password' != subject.type.toLowerCase()) ? subject.type : 'text';
 				ghost.className = (subject.className ? subject.className : '') + ' ghost-fill';
-				ghost.style.cursor = 'text';
+				ghost.style.zoom = 1;
 				ghost.value = placeholderValue;
 
+				subject.style.zoom = 1;
 				subject.parentNode.insertBefore(ghost, subject);
-				ghost.style.position = subject.style.position = 'absolute';
-				ghost.style.top = subject.style.top = '0px';
-				ghost.style.left = subject.style.left = '0px';
-				ghost.style.backgroundColor =subject.style.backgroundColor = 'transparent';
+
+				subject.style.display = ghost.style.display = 'block';
+				subject.style.position = ghost.style.position = 'absolute';
+				subject.style.top = ghost.style.top = '0px';
+				subject.style.left = ghost.style.left = '0px';
+				subject.style.backgroundColor = ghost.style.backgroundColor = 'transparent';
+				subject.style.cursor = ghost.style.cursor = 'text';
+
+				subject.parentNode.style.zIndex = 100;
+				subject.parentNode.style.zoom = 1;
+				ghost.style.zIndex = 200;
+				subject.style.zIndex = 500;
+
+				/**
+				 * IE8 seems to position the ghost on top of the subject input
+				 * no matter what, so let's give the subject the focus if the ghost gets clicked.
+				 */
+				d.attachListener(ghost.parentNode, 'click', function(ev) {
+					var target = d.getEventTarget(ev);
+					if (target == ghost) {
+						if (subject && subject.focus) {
+							subject.focus();
+						}
+					}
+				});
 
 				djs.attachListener('keydown', function(evt) {
 					var characterCode = evt.keyCode, theLetter, text = subject.value;
