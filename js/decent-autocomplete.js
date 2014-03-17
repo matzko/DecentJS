@@ -107,6 +107,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 		while(j--) {
 			list.removeChild(list.children[j]);
 		}
+
 		for(i in data) {
 			if (
 				data[i] 
@@ -179,6 +180,26 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 	},
 
 	/**
+	 * Determine whether the current text matches a selection item, for the ghost fill.
+	 *
+	 * @param [string] text The text to match.
+	 * @param [Array]  selections The selection items in which to identify matching text.
+	 */
+	determineGhostMatch = function(text) {
+		if (coreOptions['ghostFill']) {
+			ghost.value = '';
+			ghostMatch = 0;
+			if (text && 0 < selections.length) {
+				index = findFirstMatchingSelectionItem(text, selections);
+				if (index && selections[index]) {
+					ghost.value = selections[index].getPlainText();
+				}
+				ghostMatch = index;
+			}
+		}
+	},
+
+	/**
 	 * Get the index of the selection item that matches the given text.
 	 *
 	 * @param [String] text       The text to match.
@@ -242,7 +263,10 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 		},
 		// tab
 		9:function(e) {
+			var text = subject.value ? subject.value : '';
 			if (coreOptions['ghostFill'] && ghostMatch) {
+				// re-calculate ghost match on the current text
+				determineGhostMatch(text, selections);
 				setSelection(ghostMatch);
 				ghostMatch = 0;
 				djs.stopDefault(e);
@@ -294,17 +318,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			if (text.length >= coreOptions['minChars'] && !importantEvents[e.keyCode]) {
 				buildMatchingListFromData(text, listData);
 			}
-			if (coreOptions['ghostFill']) {
-				ghost.value = '';
-				ghostMatch = 0;
-				if (text && 0 < selections.length) {
-					index = findFirstMatchingSelectionItem(text, selections);
-					if (index && selections[index]) {
-						ghost.value = selections[index].getPlainText();
-					}
-					ghostMatch = index;
-				}
-			}
+			determineGhostMatch(text, selections);
 		}
 	},
 	eventKeyup = function(e) {
