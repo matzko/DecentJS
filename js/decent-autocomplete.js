@@ -273,6 +273,10 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			} else if (!activeSelection && selections[1] && !listIsHidden) {
 				setSelection(1);
 				djs.stopDefault(e);
+			} else {
+				if (activeSelection) {
+					chooseSelection(activeSelection); 
+				}
 			}
 		},
 		// enter
