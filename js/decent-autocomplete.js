@@ -371,7 +371,8 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 	var priorText, plainText, displayText, id,
 	matchingWord, associatedNode,
-	events = {};
+	events = {},
+	values = {};
 
 	/**
 	 * Construct the values.
@@ -383,6 +384,11 @@ DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 		priorText = plainText = args['text'] || '';
 		displayText = args['displayText'] || null;
 		id = args['id'] || null;
+		for(var i in args) {
+			if (DecentJS.isObjProperty(args, i)) {
+				values[i] = args[i];
+			}
+		}
 	}
 
 	/**
@@ -535,6 +541,15 @@ DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 	 */
 	this.getListItemNode = function() {
 		return associatedNode;
+	}
+
+	/**
+	 * Get the core values of the selection item.
+	 *
+	 * @return [Object] The values.
+	 */
+	this.getValues = function() {
+		return values;
 	}
 
 	/**
