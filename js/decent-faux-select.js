@@ -296,7 +296,8 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 		subject.parentNode.insertBefore(selectWrapper, subject);
 	};
 
-	if (subject) {
+	// Don't double-up the faux selections, if called multiple times for the same subject.
+	if (subject && !decent.hasClass(subject, 'faux-select-original')) {
 		init();
 	}
 }
