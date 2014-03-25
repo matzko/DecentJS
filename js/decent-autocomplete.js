@@ -281,7 +281,11 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 		},
 		// enter
 		13:function(e) {
-			chooseSelection(activeSelection); 
+			if (selections[activeSelection]) {
+				chooseSelection(activeSelection);
+			} else {
+				(new djs.autocomplete.SelectionItem({})).trigger('nothingChosen', [{text:subject.value}]);
+			}
 			hideList();
 			djs.stopDefault(e);
 		}
@@ -372,6 +376,7 @@ DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 	var priorText, plainText, displayText, id,
 	matchingWord, associatedNode,
 	events = {},
+	staticSelectionItem = DecentJS.core.prototype.autocomplete.SelectionItem,
 	values = {};
 
 	/**
@@ -420,6 +425,7 @@ DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 	this.trigger = function(eventName, inputParameters) {
 		inputParameters = inputParameters || [];
 		var callbackCount = events[eventName] ? events[eventName].length : 0,
+		generalCallbackCount = staticSelectionItem._events[eventName] ? staticSelectionItem._events[eventName].length : 0,
 		parameters = [eventName],
 		i;
 		for(i = 0; i < inputParameters.length; i++) {
@@ -428,6 +434,11 @@ DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 		for(i = 0; i < callbackCount; i++) {
 			if (events[eventName][i]) {
 				events[eventName][i].apply(this, parameters);
+			}
+		}
+		for(i = 0; i < generalCallbackCount; i++) {
+			if (staticSelectionItem._events[eventName][i]) {
+				staticSelectionItem._events[eventName][i].apply(this, parameters);
 			}
 		}
 		return this;
@@ -591,6 +602,24 @@ DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 	}
 	
 	this.init(args);
+}
+
+	/**
+	 * Add an event listener globally.
+	 *
+	 * @param [String]   eventName The name of the event.
+	 * @param [function] callback  The callback listener,
+	 * which receives the event name as its first parameter
+	 * and the SelectionItem as -this-.
+	 */
+DecentJS.core.prototype.autocomplete.SelectionItem.attachListener = function(eventName, callback) {
+	if (!this._events) {
+		this._events = {};
+	}
+	if (!this._events[eventName]) {
+		this._events[eventName] = [];
+	}
+	this._events[eventName][this._events[eventName].length] = callback;
 }
 }
 })(this);
