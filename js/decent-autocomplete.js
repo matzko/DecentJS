@@ -425,7 +425,7 @@ DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 	this.trigger = function(eventName, inputParameters) {
 		inputParameters = inputParameters || [];
 		var callbackCount = events[eventName] ? events[eventName].length : 0,
-		generalCallbackCount = staticSelectionItem._events[eventName] ? staticSelectionItem._events[eventName].length : 0,
+		generalCallbackCount = staticSelectionItem._events && staticSelectionItem._events[eventName] ? staticSelectionItem._events[eventName].length : 0,
 		parameters = [eventName],
 		i;
 		for(i = 0; i < inputParameters.length; i++) {
