@@ -129,22 +129,31 @@
 		stringifyData = function(data, results) {
 			var getMultiLevelData = function(data, parents) {
 				var results = [], myparents, i, j, subResult;
-				for (i in data) {
-					if (DecentJS.isObjProperty(data, i)) {
-						myparents = parents.slice(0);
-						myparents[myparents.length] = i;
-						// if the object is an array itself
-						if ('[]' == i.substr(i.length - 2, i.length) ) {
-							for (j = 0; j < data[i].length; j++) {
-								results[results.length] = urlencode(i) + '=' + urlencode(data[i][j]);
+				// if the data is an array, then make it look like this: field_name[]=value
+				if (data && ("object" === typeof data) && ("number" === typeof data.length)) {
+					myparents = parents.slice(0);
+					myparents[myparents.length] = '';
+					for(i = 0; i < data.length; i++) {
+						results[results.length] = [data[i], myparents];
+					}
+				} else {
+					for (i in data) {
+						if (DecentJS.isObjProperty(data, i)) {
+							myparents = parents.slice(0);
+							myparents[myparents.length] = i;
+							// if the object is an array itself
+							if ('[]' == i.substr(i.length - 2, i.length) ) {
+								for (j = 0; j < data[i].length; j++) {
+									results[results.length] = urlencode(i) + '=' + urlencode(data[i][j]);
+								}
+							} else if (null != data[i] && 'object' == typeof data[i]) {
+								subResult = getMultiLevelData(data[i], myparents);
+								for(j = 0; j < subResult.length; j++) {
+									results[results.length] = subResult[j];
+								}
+							} else {
+								results[results.length] = [data[i], myparents];
 							}
-						} else if (null != data[i] && 'object' == typeof data[i]) {
-							subResult = getMultiLevelData(data[i], myparents);
-							for(j = 0; j < subResult.length; j++) {
-								results[results.length] = subResult[j];
-							}
-						} else {
-							results[results.length] = [data[i], myparents];
 						}
 					}
 				}
@@ -196,7 +205,7 @@
 	/**
 	 * Set the input value, even if that means a multi-dimensional object.
 	 */
-	_setValueFromInputName = function( name, value ) {
+	_setValueFromInputName = function(name, value) {
 		var match = /([^\[]*)\[([^\]]*)\]/.exec(name);
 		if (match && match[0] && match[1] && match[2]) {
 			(function(name, value, results) {
@@ -209,11 +218,19 @@
 					if (match[2]) {
 						parts[parts.length] = match[2];
 					}
+					// make multi-options into an array
+					if (!match[1] && !match[2] && match[0] && '[]' == match[0]) {
+						value = [value];
+					}
 				}
 				x = results;
 				for (i = 0; i < parts.length; i++) {
 					if (i == (parts.length - 1)) {
-						x[parts[i]] = value;
+						if (x[parts[i]] && ("object" == typeof x[parts[i]]) && ("number" === typeof x[parts[i]].length)) {
+							x[parts[i]][x[parts[i]].length] = value;
+						} else {
+							x[parts[i]] = value;
+						}
 					} else {
 						if ('undefined' == typeof x[parts[i]]) {
 							x[parts[i]] = {};
