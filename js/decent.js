@@ -391,12 +391,17 @@
 	/**
 	 * Scroll to the given element.
 	 *
+	 * @param [DOMElement] The element to scroll to.
+	 * @param [offset]     Optional. The amount extra vertical distance in pixels to add to the destination.  E.g., -4 would scroll to 4 pixels above the target element.
+	 *
 	 * @uses hermite
 	 * @uses inProgress
 	 */
-	scrollToElement = function(el) {
+	scrollToElement = function(el, offset) {
 		if ( inProgress )
 			return;
+
+		offset = offset || 0;
 
 		var elCopy = el,
 		elTop = 0,
@@ -424,7 +429,7 @@
 		}
 
 		// distance = Math.abs(browserTop - elTop);
-		distance = browserTop - elTop;
+		distance = browserTop - elTop - offset;
 		inc = distance / steps;
 		for ( i = 0; i < steps; i++ ) {
 			(function() {
@@ -801,8 +806,8 @@
 	core.prototype.getFormData = function(clickTarget) {
 		return getFormData(this.actionSubject, clickTarget);
 	}
-	core.prototype.scrollTo = function() {
-		scrollToElement(this.actionSubject);
+	core.prototype.scrollTo = function(offset) {
+		scrollToElement(this.actionSubject, offset);
 		return this;
 	}
 
