@@ -224,7 +224,8 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 		decent.attachListener(selectWrapper, 'mousedown', (function(select) {
 			return function(e) {
 				var target,
-				i = select.fauxOptions.length;
+				i = select.fauxOptions.length,
+				okToChangeState = true;
 
 				if (select.fauxOpened) {
 					target = decent.getEventTarget(e);
@@ -241,9 +242,15 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 							}
 						}
 					}
+					// Don't change the state if we're just clicking on the scrollbar of the list.
+					if (target && !decent.hasClass(target, 'faux-select')) {
+						okToChangeState = false;
+					}
 				}
 				decent.stopDefault(e);
-				select.fauxOpen(!select.fauxOpened);
+				if (okToChangeState) {
+					select.fauxOpen(!select.fauxOpened);
+				}
 				select.fauxFocus(true);
 			};
 		})(select));
