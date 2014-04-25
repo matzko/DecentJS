@@ -223,12 +223,12 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 
 		decent.attachListener(selectWrapper, 'mousedown', (function(select) {
 			return function(e) {
-				var target,
+				var target, originalTarget,
 				i = select.fauxOptions.length,
 				okToChangeState = true;
 
 				if (select.fauxOpened) {
-					target = decent.getEventTarget(e);
+					originalTarget = target = decent.getEventTarget(e);
 
 					// get ancestor that's a faux option
 					while(target && target.parentNode && !decent.hasClass(target, 'faux-option')) {
@@ -243,7 +243,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 						}
 					}
 					// Don't change the state if we're just clicking on the scrollbar of the list.
-					if (target && !decent.hasClass(target, 'faux-select')) {
+					if (originalTarget && decent.hasClass(originalTarget, 'faux-select')) {
 						okToChangeState = false;
 					}
 				}
