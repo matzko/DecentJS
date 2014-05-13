@@ -61,6 +61,45 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 	actOnKeydownEvents = function(e, select) {
 		var newlySelectedIndex = -1,
 		/**
+		 * Select an option based on the next matching first character.
+		 *
+		 * @param [String] character The character.
+		 *
+		 * @return [boolean] Whether an options was successfully selected.
+		 */
+		selectAccordingToContent = function(character) {
+			var totalOptions = select.fauxOptions.length,
+			startPoint = -1 < select.fauxFocusedOption && totalOptions > (select.fauxFocusedOption + 1) ?
+				select.fauxFocusedOption + 1 : 0,
+			i, matched = false,
+
+			maybeSelectOption = function(i) {
+				var firstChar;
+				if (select.fauxOptions[i] && select.fauxOptions[i].innerHTML) {
+					firstChar = select.fauxOptions[i].innerHTML.substr(0,1);
+					if (firstChar.toLowerCase() == character.toLowerCase()) {
+						focusOnOption(select, i);
+						matched = true;
+					}
+				}
+				return matched;
+			};
+			for (i = startPoint; i < totalOptions; i++) {
+				if (maybeSelectOption(i)) {
+					break;
+				}
+			}
+			if (!matched) {
+				for (i = 0; i < startPoint; i++) {
+					if (maybeSelectOption(i)) {
+						break;
+					}
+				}
+			}
+			return matched;
+		},
+
+		/**
 		 * Select either up or down, where "up" means +1 and "down" means -1
 		 *
 		 * @param [integer] direction The direction to make the selection.
@@ -75,31 +114,43 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 				focusOnOption(select, newlySelectedIndex);
 			}
 		};
-		switch(e.keyCode) {
 
-			// up arrow
-			case 38 :
-				selectAccordingToDirection(-1);
+		if (
+			// if a number
+			(e.keyCode >= 48 && e.keyCode <= 557) ||
+			// if a letter
+			(e.keyCode >= 65 && e.keyCode <= 90)
+		) {
+			if (selectAccordingToContent(String.fromCharCode(e.keyCode))) {
 				decent.stopDefault(e);
-				break;
+			}
+		} else {
+			switch(e.keyCode) {
 
-			// down arrow
-			case 40 :
-				selectAccordingToDirection(1);
-				decent.stopDefault(e);
-				break;
+				// up arrow
+				case 38 :
+					selectAccordingToDirection(-1);
+					decent.stopDefault(e);
+					break;
 
-			// enter
-			case 13 :
-				decent.stopDefault(e);
-				select.fauxOpen(false);
-				break;
+				// down arrow
+				case 40 :
+					selectAccordingToDirection(1);
+					decent.stopDefault(e);
+					break;
 
-			// tab
-			case 9 :
-				select.fauxOpen(false);
-				select.fauxFocus(false);
-				break;
+				// enter
+				case 13 :
+					decent.stopDefault(e);
+					select.fauxOpen(false);
+					break;
+
+				// tab
+				case 9 :
+					select.fauxOpen(false);
+					select.fauxFocus(false);
+					break;
+			}
 		}
 	},
 
