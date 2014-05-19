@@ -347,7 +347,11 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 		i = 0 < fauxSelect.fauxFocusedOption ? fauxSelect.fauxFocusedOption : 0; 
 		fauxSelect.fauxShowSelection(fauxSelect.fauxOptions[i] ? fauxSelect.fauxOptions[i].innerHTML : '');
 		decent.addClass(selectWrapper, 'faux-select-wrapper');
-		selectWrapper.setAttribute('tabindex', 0);
+		if (subject.getAttribute('tabindex')) {
+			selectWrapper.setAttribute('tabindex', subject.getAttribute('tabindex'));
+		} else {
+			selectWrapper.setAttribute('tabindex', 0);
+		}
 		decent.addClass(fauxSelectionIndicator, 'faux-selection-indicator');
 		selectWrapper.appendChild(fauxSelect);
 		selectWrapper.appendChild(fauxSelectionIndicator);
