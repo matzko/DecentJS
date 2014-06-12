@@ -246,7 +246,17 @@
 				this[match[1]] = [];
 			}
 			
-			this[match[1]][this[match[1]].length] = value;
+			// with multi-select, the value could be an array
+			if (value && ("object" == typeof value) && ("number" === typeof value.length)) {
+				(function(value, results) {
+					for (var i = 0; i < value.length; i++) {
+						results[results.length] = value[i];
+					}
+				})(value, this[match[1]]);
+			} else {
+				this[match[1]][this[match[1]].length] = value;
+			}
+			
 		} else {
 			this[name] = value;
 		}
