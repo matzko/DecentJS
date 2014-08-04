@@ -238,10 +238,14 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 			if (doOpen) {
 				decent.removeClass(select, 'faux-unopened');
 				decent.addClass(select, 'faux-opened');
+				decent.removeClass(selectWrapper, 'faux-contents-unopened');
+				decent.addClass(selectWrapper, 'faux-contents-opened');
 				select.fauxOpened = true;
 			} else {
 				decent.removeClass(select, 'faux-opened');
 				decent.addClass(select, 'faux-unopened');
+				decent.removeClass(selectWrapper, 'faux-contents-opened');
+				decent.addClass(selectWrapper, 'faux-contents-unopened');
 				select.fauxOpened = false;
 			}
 		}
