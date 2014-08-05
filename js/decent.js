@@ -589,7 +589,7 @@
 	 * Capture the values of the given form when submitted; stop its submission, and pass the values to the given callback.
 	 *
 	 * @param [DOMElement] form The form to capture.
-	 * @param [function]   fn   The callback, which recieves the format data as its first parameter, the event object as the second, and the form DOMElement as -this-.
+	 * @param [function]   fn   The callback, which receives the format data as its first parameter, the event object as the second, and the form DOMElement as -this-.
 	 */
 	attachFormListener = function(form, callback) {
 		var clickedEl = null,
