@@ -166,39 +166,42 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 			amongSelected = false,
 			origValue;
 
-			// if the focused-on faux option is not among the 
-			// already-selected options, then we will select
-			// and trigger a change event.
-			while(i--) {
-				if (select.fauxSelectedOptions[i] == optionIndex) {
-					amongSelected = true;
-					break;
-				}
-			}
-			if (!amongSelected) {
-				if (!select.fauxMultiSelect) {
-					select.fauxSelectedOptions = [];
-					i = select.fauxOptions.length;
-					while(i--) {
-						if (i != optionIndex) {
-							select.fauxOptions[i].fauxSelected = false;
-							decent.removeClass(select.fauxOptions[i], 'faux-selected');
-						}
-					}
-					if (select.fauxOptions[optionIndex].fauxOriginal) {
-						origValue = select.fauxOriginal.value;
-						select.fauxOriginal.value = select.fauxOptions[optionIndex].fauxOriginal.value;
-						if (origValue != select.fauxOriginal.value) {
-							fireEvent(select.fauxOriginal, 'change');
-						}
+			// allow a callback to affect the focusing
+			if (!options.preFocusOptionCallback || options.preFocusOptionCallback.call(this, select, optionIndex)) {
+				// if the focused-on faux option is not among the 
+				// already-selected options, then we will select
+				// and trigger a change event.
+				while(i--) {
+					if (select.fauxSelectedOptions[i] == optionIndex) {
+						amongSelected = true;
+						break;
 					}
 				}
-				select.fauxFocusedOption = optionIndex;
-				select.fauxOptions[optionIndex].fauxSelected = true;
-				select.fauxOptions[optionIndex].fauxOriginal.selected = true;
-				select.fauxShowSelection(select.fauxOptions[optionIndex].innerHTML);
-				decent.addClass(select.fauxOptions[optionIndex],'faux-selected');
-				select.fauxSelectedOptions[select.fauxSelectedOptions.length] = optionIndex;
+				if (!amongSelected) {
+					if (!select.fauxMultiSelect) {
+						select.fauxSelectedOptions = [];
+						i = select.fauxOptions.length;
+						while(i--) {
+							if (i != optionIndex) {
+								select.fauxOptions[i].fauxSelected = false;
+								decent.removeClass(select.fauxOptions[i], 'faux-selected');
+							}
+						}
+						if (select.fauxOptions[optionIndex].fauxOriginal) {
+							origValue = select.fauxOriginal.value;
+							select.fauxOriginal.value = select.fauxOptions[optionIndex].fauxOriginal.value;
+							if (origValue != select.fauxOriginal.value) {
+								fireEvent(select.fauxOriginal, 'change');
+							}
+						}
+					}
+					select.fauxFocusedOption = optionIndex;
+					select.fauxOptions[optionIndex].fauxSelected = true;
+					select.fauxOptions[optionIndex].fauxOriginal.selected = true;
+					select.fauxShowSelection(select.fauxOptions[optionIndex].innerHTML);
+					decent.addClass(select.fauxOptions[optionIndex],'faux-selected');
+					select.fauxSelectedOptions[select.fauxSelectedOptions.length] = optionIndex;
+				}
 			}
 		}
 	},
