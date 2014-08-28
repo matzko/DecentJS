@@ -729,6 +729,41 @@
 	},
 
 	/**
+	 * Iterate over each child element with the corresponding class.
+	 *
+	 * @param [DOMElement] scope     The parent element.
+	 * @param [String]     className The class used to match child elements.
+	 * @param [function]   callback  The callback called with child as its scope and index as its first parameter.
+	 */
+	eachChildWithClass = function(scope, className, callback) {
+		var children = [],
+		descendants = [], i;
+		if (scope.querySelectorAll) {
+			children = scope.querySelectorAll('.' + className);
+		} else {
+			descendants = scope.getElementsByTagName('*');
+			for (i = 0; i < descendants.length; i++) {
+				if (hasClass(descendants[i], className)) {
+					children[children.length] = descendants[i];
+				}
+			}
+		}
+		each(children, callback);
+	},
+
+	/**
+	 * Iterate over the collection invoking the callback for each.
+	 *
+	 * @param [Array] collection The collection to iterate over.
+	 * @param [function] callback The callback that receives each member of the collection as its scope, with the index as its first parameter.
+	 */
+	each = function(collection, callback) {
+		for (var i = 0; i < collection.length; i++) {
+			callback.call(collection[i], i);
+		}
+	},
+
+	/**
 	 * Ready a callback for whichever occurs first: DOMContentLoaded or window.onload
 	 *
 	 * @param function callback The callback to call at that event.
@@ -773,6 +808,14 @@
 	}
 	core.prototype.removeClass = function(className) {
 		removeClass(this.actionSubject, className);
+		return this;
+	}
+	core.prototype.eachChildWithClass = function(className, callback) {
+		eachChildWithClass(this.actionSubject, className, callback);
+		return this;
+	}
+	core.prototype.each = function(callback) {
+		each(this.actionSubject, callback);
 		return this;
 	}
 	/**
@@ -830,6 +873,8 @@
 	DecentJS.addClass = addClass;
 	DecentJS.hasClass = hasClass;
 	DecentJS.removeClass = removeClass;
+	DecentJS.eachChildWithClass = eachChildWithClass;
+	DecentJS.each = each;
 	DecentJS.getFormData = getFormData;
 	DecentJS.getCookie = getCookie;
 	DecentJS.setCookie = function(name, value, days) {
