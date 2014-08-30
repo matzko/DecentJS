@@ -366,6 +366,24 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			ghost.type = subject.type ? subject.type : 'text';
 			ghost.className = (subject.className ? subject.className : '') + ' ghost-fill';
 			container.insertBefore(ghost, subject);
+
+			subject.parentNode.style.zIndex = 100;
+			subject.parentNode.style.zoom = 1;
+			ghost.style.zIndex = 200;
+			subject.style.zIndex = 500;
+
+			/**
+			 * IE8 seems to position the ghost on top of the subject input
+			 * no matter what, so let's give the subject the focus if the ghost gets clicked.
+			 */
+			d.attachListener(ghost.parentNode, 'click', function(ev) {
+				var target = d.getEventTarget(ev);
+				if (target == ghost) {
+					if (subject && subject.focus) {
+						subject.focus();
+					}
+				}
+			});
 		}
 		hideList();
 		container.appendChild(list);
