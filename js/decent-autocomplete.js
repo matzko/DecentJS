@@ -21,6 +21,9 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			(function(queryText) {
 				return function(data) {
 					setListData(queryText, data);
+					if (queryText.length >= coreOptions['minChars']) {
+						buildMatchingListFromData(queryText, data);
+					}
 				}
 			})(subject.value)
 		);
