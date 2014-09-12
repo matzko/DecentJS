@@ -115,7 +115,10 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			if (
 				data[i] 
 				&& (data[i] instanceof djs.autocomplete.SelectionItem)
-				&& data[i].matches(new RegExp(('' + word).split('').join('\\w*').replace(/\W/, ""), 'i'))
+				&& (
+					data[i].matches(word) ||
+					data[i].matches(new RegExp(('' + word.replace(/\W/g,'')).split('').join('\\w*').replace(/\W/, ""), 'i'))
+				)
 			) {
 				data[i].setMatchingWord(word);
 				matchingData[matchingData.length] = data[i];
@@ -594,7 +597,7 @@ DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 	this.matches = function(matcher) {
 		switch((typeof matcher).toLowerCase()) {
 			case "string" :
-				return !! this.getPlainText().match(new RegExp(matcher));
+				return !! ((this.getPlainText().indexOf(matcher) > -1) || this.getPlainText().match(new RegExp(matcher)));
 				break;
 			case "function" :
 				return !! matcher.call(this, this.getPlainText());
