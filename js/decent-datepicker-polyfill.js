@@ -46,7 +46,7 @@
 		container.style.display = 'block';
 		container.style.top = input.offsetHeight + 'px';
 
-		attachClickListener(document, (function(wrapper, container) {
+		attachClickListener(d, (function(wrapper, container) {
 			return function(evt) {
 				var target = getEventTarget(evt), inCalendar = false;
 				if (target && ! wrapper.contains(target)) {
@@ -123,6 +123,7 @@
 		dayClickCallback = function(year, month, day) {
 			deactivateCalendar(container);
 			this.value = year + '-' + (10 > month ? '0' + month : month) + '-' + (10 > day ? '0' + day : day);
+			fireChangeEvent(this); 
 		},
 
 		navigateMonth = function(year, month) {
@@ -250,6 +251,40 @@
 		container.style.display = 'none';
 	},
 
+	/**
+	 * Fire a change event on the input element.
+	 *
+	 * @param [DOMElement] input The input on which to fire the change event.
+	 */
+	fireChangeEvent = function(input) {
+		var doc = d, event;
+		if (input.ownerDocument) {
+			doc = input.ownerDocument;
+		}
+
+		if (input.dispatchEvent) {
+			event = doc.createEvent("HTMLEvents");
+			event.initEvent('change', false, true);
+
+			// allow detection of synthetic events
+			event.synthetic = true;
+			input.dispatchEvent(event, true);
+			
+		// IE
+		} else if (input.fireEvent) {
+			event = doc.createEventObject();
+			event.synthetic = true;
+			input.fireEvent("onchange", event);
+		}
+	},
+
+	/**
+	 * Get the target of the given event.
+	 *
+	 * @param [Event] e The event for which to get the target.
+	 *
+	 * @return [DOMElement] The target of the event.
+	 */
 	getEventTarget = function(e) {
 		e = e || w.event;
 		return e.target || e.srcElement;
@@ -270,6 +305,10 @@
 	},
 
 	stopDefault = function(evt) {
+		if (evt.stopPropagation) {
+			evt.stopPropagation();
+		}
+		evt.cancelBubble = true;
 		if (evt.preventDefault) {
 			evt.preventDefault();
 		}
@@ -277,9 +316,12 @@
 	},
 
 	whenFocusing = function(evt) {
-		var target = getEventTarget(evt);
+		var target = getEventTarget(evt), existingDate = new Date(), matches;
 		if (isDateInput(target)) {
-			activateCalendar.call(target, new Date(target.value ? target.value : null));
+			if (target.value && (matches = /(\d\d\d\d)-(\d\d)-(\d\d)/.exec(target.value))) {
+				existingDate = new Date(parseInt(matches[1], 10), ((parseInt(matches[2], 10) - 1) % 12), parseInt(matches[3], 10));
+			}
+			activateCalendar.call(target, existingDate);
 		}
 	},
 
@@ -291,6 +333,6 @@
 		}
 	};
 	if (!NATIVE_DATEPICKER) {
-		listenForTriggeringEvents(document); 
+		listenForTriggeringEvents(d); 
 	}
 })(this);
