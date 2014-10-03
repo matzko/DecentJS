@@ -40,6 +40,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 
 			// allow detection of synthetic events
 			event.synthetic = true;
+			event.syntheticSource = 'decent-faux-select';
 			el.dispatchEvent(event, true);
 			
 		// IE
@@ -48,6 +49,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 
 			// allow detection of synthetic events
 			event.synthetic = true;
+			event.syntheticSource = 'decent-faux-select';
 			el.fireEvent("on" + eventName, event);
 		}
 	},
@@ -324,6 +326,13 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 			if (select.fauxFocused) {
 				select.fauxFocus(true);
 				return actOnKeydownEvents(e, select); 
+			}
+		});
+		decent.attachListener(subject, 'change', function(evt) {
+			if (!evt.syntheticSource || ('decent-faux-select' != evt.syntheticSource)) {
+				if ('undefined' != typeof subject.selectedIndex) {
+					focusOnOption(select, subject.selectedIndex);
+				}
 			}
 		});
 	},
