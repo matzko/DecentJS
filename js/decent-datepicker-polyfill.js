@@ -30,8 +30,8 @@
 				container = inputContainers[input.getAttribute(index)];
 				wrapper = container.parentNode;
 		} else {
-			container = create('div', {class: 'decent-calendar-datepicker'});
-			wrapper = create('div', {class: 'decent-datepicker-wrapper'});
+			container = create('div', {'class': 'decent-calendar-datepicker'});
+			wrapper = create('div', {'class': 'decent-datepicker-wrapper'});
 			input.parentNode.insertBefore(wrapper, input);
 			containerId = 'contid-' + (new Date().getTime());
 			input.setAttribute(index, containerId);
@@ -91,8 +91,8 @@
 	 */
 	buildCalendar = function(container, year, month, activeDay) {
 		var input = this,
-		calendar = create('div', {class: 'calendar-content'}),
-		navigationEl = create('div', {class: 'calendar-navigation'}),
+		calendar = create('div', {'class': 'calendar-content'}),
+		navigationEl = create('div', {'class': 'calendar-navigation'}),
 		table = create('table'),
 		tBody = create('tbody'),
 		tHead = create('thead'),
@@ -130,7 +130,7 @@
 			activateCalendar.call(this, new Date(year, month - 1, 1));
 		};
 
-		link = create('a', {href: '#', class: 'prior-nav'});
+		link = create('a', {href: '#', 'class': 'prior-nav'});
 		span = create('span');
 		span.appendChild(d.createTextNode(navigation[0]));
 		link.appendChild(span);
@@ -142,11 +142,11 @@
 		})(input, ((1 == month) ? year - 1 : year), ((1 == month) ? 12 : (month - 1))));
 		navigationEl.appendChild(link);
 
-		span = create('div', {class: 'calendar-title'});
+		span = create('div', {'class': 'calendar-title'});
 		span.appendChild(d.createTextNode(monthNames[month] + ' ' + year));
 		navigationEl.appendChild(span);
 
-		link = create('a', {href: '#', class: 'next-nav'});
+		link = create('a', {href: '#', 'class': 'next-nav'});
 		span = create('span');
 		span.appendChild(d.createTextNode(navigation[1]));
 		link.appendChild(span);
@@ -165,9 +165,9 @@
 			lastDayOfCalendar = new Date(lastDayOfCalendar.getTime() + DAY_MILLISECS);
 		}
 		if (firstDayOfCalendar && lastDayOfCalendar) {
-			weekEl = create('tr', {class: 'weekdays'});
+			weekEl = create('tr', {'class': 'weekdays'});
 			for (i = 0; i < daysOfWeekAbbrev.length; i++) {
-				dayEl = create('th', {class: 'weekday-name', title: daysOfWeek[i]});
+				dayEl = create('th', {'class': 'weekday-name', title: daysOfWeek[i]});
 				dayEl.appendChild(d.createTextNode(daysOfWeekAbbrev[i]));
 				weekEl.appendChild(dayEl);
 			}
@@ -175,7 +175,7 @@
 			day = new Date(firstDayOfCalendar.getTime());
 			while (day.getTime() < (lastDayOfCalendar.getTime() + (DAY_MILLISECS / 2))) {
 				if (0 == day.getDay()) {
-					weekEl = create('tr', {class: 'week'});
+					weekEl = create('tr', {'class': 'week'});
 				}
 				dayClass = 'day';
 				if (day.getMonth() == firstDayOfMonth.getMonth()) {
@@ -199,8 +199,8 @@
 				) {
 					dayClass += ' current-day';
 				}
-				dayEl = create('td', {class: dayClass, 'data-day': day.getDate(), 'data-month': day.getMonth() + 1, 'data-year': day.getFullYear()});
-				link = create('a', {href: '#', class: 'day-select'});
+				dayEl = create('td', {'class': dayClass, 'data-day': day.getDate(), 'data-month': day.getMonth() + 1, 'data-year': day.getFullYear()});
+				link = create('a', {href: '#', 'class': 'day-select'});
 				attachClickListener(link, (function(input, year, month, monthDay) {
 					return function(ev) {
 						dayClickCallback.call(input, year, month, monthDay);
