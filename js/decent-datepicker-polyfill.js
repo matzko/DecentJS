@@ -332,7 +332,7 @@ DecentDatepicker = (function(scope) {
 	},
 
 	whenReady = function() {
-		if (!has_native_datepicker()) {
+		if (!DecentDatepicker.has_native_datepicker()) {
 			listenForTriggeringEvents(d); 
 		}
 	},
