@@ -351,6 +351,7 @@ DecentDatepicker = (function(scope) {
 	}
 
 	return {
-		has_native_datepicker:has_native_datepicker
+		has_native_datepicker:has_native_datepicker,
+		isDateInput:isDateInput
 	}
 })(this);
