@@ -1,14 +1,20 @@
-(function(scope) {
+DecentDatepicker = (function(scope) {
 	var d = document,
 	w = window,
-	NATIVE_DATEPICKER = (function() {
-		var input = d.createElement('input'),
-		notADateValue = 'not-a-date';
+	has_native_datepicker = (function() {
+		var result = null;
+		return function() {
+			if (null === result) {
+				var input = d.createElement('input'),
+				notADateValue = 'not-a-date';
 
-		input.setAttribute('type','date');
-		input.setAttribute('value', notADateValue); 
+				input.setAttribute('type','date');
+				input.setAttribute('value', notADateValue); 
 
-		return !(input.value === notADateValue);
+				result = !(input.value === notADateValue);
+			}
+			return result;
+		}
 	})(),
 
 	DAY_MILLISECS = (1000 * 3600 * 24),
@@ -325,6 +331,12 @@
 		}
 	},
 
+	whenReady = function() {
+		if (!has_native_datepicker()) {
+			listenForTriggeringEvents(d); 
+		}
+	},
+
 	listenForTriggeringEvents = function(parentEl) {
 		if (parentEl.addEventListener) {
 			parentEl.addEventListener('focus',whenFocusing,true);
@@ -332,7 +344,13 @@
 			parentEl.attachEvent('onfocusin', function() { return whenFocusing.call(parentEl, w.event);});
 		}
 	};
-	if (!NATIVE_DATEPICKER) {
-		listenForTriggeringEvents(d); 
+	if (w.addEventListener) {
+		w.addEventListener('load',whenReady);
+	} else if (w.attachEvent) {
+		w.attachEvent('onload', function() { return whenReady.call(w, w.event);});
+	}
+
+	return {
+		has_native_datepicker:has_native_datepicker
 	}
 })(this);
