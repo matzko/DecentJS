@@ -1,0 +1,94 @@
+.faux-select-wrapper {
+	float:left;
+	position:relative;
+	z-index:960;
+}
+
+select[disabled="disabled"] + .faux-select-wrapper {
+	border-color:#888888;
+}
+
+select[disabled="disabled"] + .faux-select-wrapper .faux-selection-indicator {
+	background-color:#888888;
+	border-color:#888888;
+	color:#707070;
+	cursor:not-allowed;
+}
+
+.faux-contents-opened {
+	z-index:980;
+}
+
+.faux-contents-unopened {
+	z-index:930;
+}
+
+.faux-selection-indicator {
+	background-color:#fff;
+	border:1px solid #ccc;
+	display:block;
+	line-height:1em;
+	overflow:hidden;
+	padding:.5em 1em .5em .5em;
+	position:relative;
+	top:0;
+	left:0;
+	width:5em;
+}
+
+.faux-selection-indicator:after {
+	content:"\25BE";
+	display:block;
+	padding:.5em;
+	position:absolute;
+	right:0;
+	top:0;
+}
+
+.faux-select {
+	background-color:#fff;
+	border:1px solid #ccc;
+	color:#000;
+	cursor:default;
+	display:block;
+	margin:0;
+	max-height:20em;
+	overflow-x: hidden;
+	overflow-y:scroll;
+	padding:0;
+	position:absolute;
+	top:2em;
+	left:0;
+	z-index:970;
+}
+
+.faux-unopened {
+	display:none;
+}
+
+.faux-select li {
+	background-color:#fff;
+	display:block;
+	line-height:1em;
+	list-style-type:none;
+	padding:.5em;
+	width:5em;
+}
+
+.faux-select li.faux-selected {
+	z-index:999;
+}
+
+.faux-opened li:hover,
+.faux-opened li.faux-selected {
+	background-color:$main-color;
+	color:#fff;
+}
+
+.faux-unopened .faux-option {
+	position:absolute;
+}
+
+select.faux-select-original {
+	display:none !important;
+}

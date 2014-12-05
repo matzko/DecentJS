@@ -287,31 +287,36 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 				i = select.fauxOptions.length,
 				okToChangeState = true;
 
-				if (select.fauxOpened) {
-					originalTarget = target = decent.getEventTarget(e);
+				// don't do anything if the real select is disabled
+				if (subject && subject.disabled) {
+					okToChangeState = false;
+				} else {
+					if (select.fauxOpened) {
+						originalTarget = target = decent.getEventTarget(e);
 
-					// get ancestor that's a faux option
-					while(target && target.parentNode && !decent.hasClass(target, 'faux-option')) {
-						target = target.parentNode;
-					}
-					if (decent.hasClass(target, 'faux-option')) {
-						while(i--) {
-							if (target == select.fauxOptions[i]) {
-								focusOnOption(select, i);
-								break;
+						// get ancestor that's a faux option
+						while(target && target.parentNode && !decent.hasClass(target, 'faux-option')) {
+							target = target.parentNode;
+						}
+						if (decent.hasClass(target, 'faux-option')) {
+							while(i--) {
+								if (target == select.fauxOptions[i]) {
+									focusOnOption(select, i);
+									break;
+								}
 							}
 						}
+						// Don't change the state if we're just clicking on the scrollbar of the list.
+						if (originalTarget && decent.hasClass(originalTarget, 'faux-select')) {
+							okToChangeState = false;
+						}
 					}
-					// Don't change the state if we're just clicking on the scrollbar of the list.
-					if (originalTarget && decent.hasClass(originalTarget, 'faux-select')) {
-						okToChangeState = false;
+					decent.stopDefault(e);
+					if (okToChangeState) {
+						select.fauxOpen(!select.fauxOpened);
 					}
+					select.fauxFocus(true);
 				}
-				decent.stopDefault(e);
-				if (okToChangeState) {
-					select.fauxOpen(!select.fauxOpened);
-				}
-				select.fauxFocus(true);
 			};
 		})(select));
 
@@ -372,6 +377,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 		selectWrapper.appendChild(fauxSelect);
 		selectWrapper.appendChild(fauxSelectionIndicator);
 		subject.parentNode.insertBefore(selectWrapper, subject);
+		subject.parentNode.insertBefore(subject, selectWrapper);
 	};
 
 	// Don't double-up the faux selections, if called multiple times for the same subject.
