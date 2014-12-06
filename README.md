@@ -14,7 +14,7 @@ Faux selects allows you to imitate `<select>` elements in order to customize sty
 Use like so:
 
 ```javascript
-DecentJS(Decent.gebid('id-of-select')).fauxSelect();
+DecentJS(DecentJS.gebid('id-of-select')).fauxSelect();
 ```
 
 This will generate HTML for the faux select element and insert it before the actual select element:
