@@ -122,3 +122,11 @@ select.faux-select-original {
 	}
 }
 ```
+
+## Testing
+
+You can execute the jasmine test like so:
+
+```shell
+grunt jasmine
+```
