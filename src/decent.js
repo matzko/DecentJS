@@ -714,7 +714,7 @@
 	 */
 	hasClass = function(el, className) {
 		var re = new RegExp('\\b' + className + '\\b');
-		return !! re.exec('' + el.className);
+		return !! (el && re.exec('' + el.className));
 	},
 
 	/**
