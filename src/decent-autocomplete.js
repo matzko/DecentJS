@@ -32,10 +32,16 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 	hideList = function() {
 		list.style.display = 'none';
 		listIsHidden = true;
+		if (subject && subject.parentNode) {
+			subject.parentNode.style.zIndex = 90;
+		}
 	},
 	showList = function() {
 		list.style.display = 'block';
 		listIsHidden = false;
+		if (subject && subject.parentNode) {
+			subject.parentNode.style.zIndex = 100;
+		}
 	},
 	list = create('ul'),
 	listData = {},
