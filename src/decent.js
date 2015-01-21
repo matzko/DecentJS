@@ -25,31 +25,31 @@
 	d = document,
 	w = window,
 
-	XHR = (function() { 
-		var i, 
+	XHR = (function() {
+		var i,
 		fs = [
-		function() { // for legacy eg. IE 5 
-			return new scope.ActiveXObject("Microsoft.XMLHTTP"); 
-		}, 
-		function() { // for fully patched Win2k SP4 and up 
-			return new scope.ActiveXObject("Msxml2.XMLHTTP.3.0"); 
-		}, 
-		function() { // IE 6 users that have updated their msxml dll files. 
-			return new scope.ActiveXObject("Msxml2.XMLHTTP.6.0"); 
-		}, 
+		function() { // for legacy eg. IE 5
+			return new scope.ActiveXObject("Microsoft.XMLHTTP");
+		},
+		function() { // for fully patched Win2k SP4 and up
+			return new scope.ActiveXObject("Msxml2.XMLHTTP.3.0");
+		},
+		function() { // IE 6 users that have updated their msxml dll files.
+			return new scope.ActiveXObject("Msxml2.XMLHTTP.6.0");
+		},
 		function() { // IE7, Safari, Mozilla, Opera, etc (NOTE: IE7 native version does not support overrideMimeType or local file requests)
 			return new XMLHttpRequest();
-		}]; 
+		}];
 
 		// Loop through the possible factories to try and find one that
 		// can instantiate an XMLHttpRequest object that works.
 
-		for ( i = fs.length; i--; ) { 
-			try { 
-				if ( fs[i]() ) { 
-					return fs[i]; 
-				} 
-			} catch (e) {} 
+		for ( i = fs.length; i--; ) {
+			try {
+				if ( fs[i]() ) {
+					return fs[i];
+				}
+			} catch (e) {}
 		}
 	})(),
 
@@ -59,7 +59,7 @@
 	 * @param [object]   data     The associative array of data to post, or a string of already-encoded data.
 	 * @param [function] callback The function to call upon success.
 	 * @param [String]   method   Optional. The type of request to make, such as GET, PUT, POST or DELETE. Default is "POST"
-	 * @param [object]   headers  Optional. Headers to send with the request. 
+	 * @param [object]   headers  Optional. Headers to send with the request.
 	 */
 	ajax = function(url, data, callback, method, headers) {
 		url = url || '';
@@ -100,8 +100,8 @@
 			request.send(dataString);
 		} catch(e) {};
 	},
-	
-	/** 
+
+	/**
 	 * Whether the property is of this particular object's
 	 * @param obj The object whose property we're interested in.
 	 * @param property The property which we're interested in.
@@ -245,7 +245,7 @@
 			if ( ! this[match[1]] || ! this[match[1]][0] ) {
 				this[match[1]] = [];
 			}
-			
+
 			// with multi-select, the value could be an array
 			if (value && ("object" == typeof value) && ("number" === typeof value.length)) {
 				(function(value, results) {
@@ -256,7 +256,7 @@
 			} else {
 				this[match[1]][this[match[1]].length] = value;
 			}
-			
+
 		} else {
 			this[name] = value;
 		}
@@ -276,7 +276,7 @@
 			return {};
 		var elTypes = ['input', 'select', 'textarea'],
 		i, j = elTypes.length, k = 0,
-		objType, 
+		objType,
 		data  = {},
 		fields,
 		fieldValue;
@@ -322,11 +322,11 @@
 							_setValueFromInputName.call(data, fields[i].name, fields[i].value);
 						}
 					} else if (
-						! objType || 
+						! objType ||
 						(('submit' != objType) && ('radio' != objType)) ||
-						( 
+						(
 							'radio' == objType &&
-							fields[i].checked 
+							fields[i].checked
 						)
 					) {
 						_setValueFromInputName.call(data, fields[i].name, fields[i].value);
@@ -367,9 +367,9 @@
 		i;
 
 		for(i = 0; i < ca.length; i++ ) {
-			while( ca[i].charAt(0) == ' ' ) 
+			while( ca[i].charAt(0) == ' ' )
 				ca[i] = ca[i].substring( 1, ca[i].length );
-			if (ca[i].indexOf( nameEQ ) == 0 ) 
+			if (ca[i].indexOf( nameEQ ) == 0 )
 				return decodeURIComponent( ca[i].substring( nameEQ.length, ca[i].length ) );
 		}
 		return null;
@@ -387,7 +387,7 @@
 		var i = lerp(start, end, value * value * ( 3 - 2 * value ));
 		return i;
 	},
-	
+
 	/*
 	berp = function( start, end, value ) {
 		value = 0 > value ? 0 : value;
@@ -463,7 +463,7 @@
 				if ( this.inProgress )
 					return;
 				this.inProgress = true;
-					
+
 				callback = callback || function() {};
 
 				var steps = this.time / this.rate,
@@ -471,7 +471,7 @@
 				last = false,
 				state,
 				that = this;
-				
+
 
 				for ( i = 0; i < steps; i++ ) {
 					last = ( i + 1 ) < steps ? false : true;
@@ -505,7 +505,7 @@
 		} else if ( 1 === dir ) {
 			obj.style.opacity = 0;
 			obj.style.filter = 'alpha(opacity=0)';
-			obj.style.display = 'block';	
+			obj.style.display = 'block';
 		}
 
 
@@ -520,7 +520,7 @@
 					obj.style.opacity = 0;
 					obj.style.filter = 'alpha(opacity=0)';
 					obj.style.display = 'none';
-				} else {	
+				} else {
 					obj.style.opacity = 1;
 					obj.style.filter = 'alpha(opacity=100)';
 					obj.style.display = 'block';
@@ -566,11 +566,11 @@
 
 		(function(className, callback, parentEl) {
 			attachListener( parentEl, 'click', function(e) {
-				var result = true, 
+				var result = true,
 				target = getEventTarget(e);
 				do {
 					if ( target.className && hasClass(target, className) ) {
-						result = callback.call( target, e );	
+						result = callback.call( target, e );
 						if ( ! result ) {
 							eventHalt(e)
 							return false;
@@ -606,7 +606,7 @@
 	/**
 	 * Get the default button for the given form.
 	 *
-	 * According to the HTML5 spec, a form's default button is 
+	 * According to the HTML5 spec, a form's default button is
 	 * "is the first submit button in tree order whose form owner is that form element."
 	 * <http://dev.w3.org/html5/spec-preview/constraints.html>
 	 * And "The term tree order means a pre-order, depth-first traversal of DOM nodes involved (through the parentNode/childNodes relationship)."
@@ -632,11 +632,11 @@
 		},
 		buttons = form.getElementsByTagName('button'),
 		inputs = form.getElementsByTagName('input'),
-		i = inputs.length, j = buttons.length, 
+		i = inputs.length, j = buttons.length,
 		submits = [],
 		defaultButtonOrder, candidateOrder,
 		defaultButton = null;
-		
+
 		while (i--) {
 			if (inputs[i]) {
 				if ('submit' == ( inputs[i].type + '' ).toLowerCase()) {
@@ -774,7 +774,7 @@
 		attachListener(d, 'DOMContentLoaded', eventDOMLoaded );
 		attachListener(w, 'load', eventDOMLoaded );
 	},
-	
+
 	initialized = false,
 	loadedCallbacks = [function() {}],
 	eventDOMLoaded = function() {

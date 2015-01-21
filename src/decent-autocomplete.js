@@ -17,7 +17,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 	canFetchList = true,
 	requestCache = {},
 	requestListData = function(subject, callback) {
-		callback.call(djs, subject.value, 
+		callback.call(djs, subject.value,
 			(function(queryText) {
 				return function(data) {
 					setListData(queryText, data);
@@ -113,7 +113,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 
 		for(i in data) {
 			if (
-				data[i] 
+				data[i]
 				&& (data[i] instanceof djs.autocomplete.SelectionItem)
 				&& (
 					data[i].matches(word) ||
@@ -147,7 +147,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 	 *
 	 * @param [string] markupValue The markup for the content of the item.
 	 * @param [string] id          The id of the list item.
-	 * 
+	 *
 	 * @return [DOMElement] The <li> list item.
 	 */
 	makeListItem = function(markupValue, id) {
@@ -179,7 +179,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 				listData[data[i]] = new djs.autocomplete.SelectionItem({id:data[i],text:data[i]});
 				requestCache[data[i]] = 1;
 			}
-		} 
+		}
 		if (0 < data.length) {
 			requestCache[queryText] = 1;
 		}
@@ -281,7 +281,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 				djs.stopDefault(e);
 			} else {
 				if (activeSelection) {
-					chooseSelection(activeSelection); 
+					chooseSelection(activeSelection);
 				}
 			}
 		},
@@ -301,7 +301,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 		if (target && d.hasClass(target, 'autocomplete-item-link')) {
 			if (target.id && selectionLinks[target.id] && selections[selectionLinks[target.id]]) {
 				setSelection(selectionLinks[target.id]);
-				chooseSelection(activeSelection); 
+				chooseSelection(activeSelection);
 				hideList();
 			}
 			d.stopDefault(e);
@@ -373,7 +373,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			ghost.className = (subject.className ? subject.className : '') + ' ghost-fill';
 			container.insertBefore(ghost, subject);
 
-			subject.parentNode.style.zIndex = 100;
+			subject.parentNode.style.zIndex = 90;
 			subject.parentNode.style.zoom = 1;
 			ghost.style.zIndex = 200;
 			subject.style.zIndex = 500;
@@ -530,7 +530,7 @@ DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 	this.getDisplayMarkup = function() {
 	/*
 				if (selections[i]['node'] && selections[i]['node'].firstChild) {
-					selections[i]['node'].firstChild.innerHTML = selections[i]['text']; 
+					selections[i]['node'].firstChild.innerHTML = selections[i]['text'];
 				}
 				/**/
 		return null === displayText ? this.getPlainText() : displayText;
@@ -624,7 +624,7 @@ DecentJS.core.prototype.autocomplete.SelectionItem = function(args) {
 		}
 		return false;
 	}
-	
+
 	this.init(args);
 }
 

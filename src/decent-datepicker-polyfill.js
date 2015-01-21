@@ -9,7 +9,7 @@ DecentDatepicker = (function(scope) {
 				notADateValue = 'not-a-date';
 
 				input.setAttribute('type','date');
-				input.setAttribute('value', notADateValue); 
+				input.setAttribute('value', notADateValue);
 
 				result = !(input.value === notADateValue);
 			}
@@ -18,7 +18,7 @@ DecentDatepicker = (function(scope) {
 	})(),
 
 	DAY_MILLISECS = (1000 * 3600 * 24),
-	
+
 	inputContainers = {},
 
 	/**
@@ -41,7 +41,7 @@ DecentDatepicker = (function(scope) {
 			input.parentNode.insertBefore(wrapper, input);
 			containerId = 'contid-' + (new Date().getTime());
 			input.setAttribute(index, containerId);
-			inputContainers[containerId] = container; 
+			inputContainers[containerId] = container;
 
 			wrapper.appendChild(input);
 			wrapper.appendChild(container);
@@ -56,7 +56,7 @@ DecentDatepicker = (function(scope) {
 			return function(evt) {
 				var target = getEventTarget(evt), inCalendar = false;
 				if (target && ! wrapper.contains(target)) {
-					// Gotta check whether the click was done on a 
+					// Gotta check whether the click was done on a
 					// now-removed calendar item
 					do {
 						if (target.className && (-1 < target.className.indexOf('calendar-content'))) {
@@ -70,7 +70,7 @@ DecentDatepicker = (function(scope) {
 					}
 				}
 			};
-		})(wrapper, container)); 
+		})(wrapper, container));
 	},
 
 	/**
@@ -86,7 +86,7 @@ DecentDatepicker = (function(scope) {
 			el.attachEvent('onclick', function() { return callback.call(el, w.event);});
 		}
 	},
-	
+
 	/**
 	 * Create the table element that is the calendar.
 	 *
@@ -129,7 +129,7 @@ DecentDatepicker = (function(scope) {
 		dayClickCallback = function(year, month, day) {
 			deactivateCalendar(container);
 			this.value = year + '-' + (10 > month ? '0' + month : month) + '-' + (10 > day ? '0' + day : day);
-			fireChangeEvent(this); 
+			fireChangeEvent(this);
 		},
 
 		navigateMonth = function(year, month) {
@@ -142,7 +142,7 @@ DecentDatepicker = (function(scope) {
 		link.appendChild(span);
 		attachClickListener(link, (function(input, priorYear, priorMonth) {
 			return function(evt) {
-				navigateMonth.call(input, priorYear, priorMonth); 
+				navigateMonth.call(input, priorYear, priorMonth);
 				stopDefault(evt);
 			};
 		})(input, ((1 == month) ? year - 1 : year), ((1 == month) ? 12 : (month - 1))));
@@ -158,7 +158,7 @@ DecentDatepicker = (function(scope) {
 		link.appendChild(span);
 		attachClickListener(link, (function(input, nextYear, nextMonth) {
 			return function(evt) {
-				navigateMonth.call(input, nextYear, nextMonth); 
+				navigateMonth.call(input, nextYear, nextMonth);
 				stopDefault(evt);
 			};
 		})(input, ((12 == month) ? year + 1 : year), ((12 == month) ? 1 : (month + 1))));
@@ -235,7 +235,7 @@ DecentDatepicker = (function(scope) {
 	 * @param [String] name    The name of the element to create.
 	 * @param [Object] attribs The attributes to give the element.
 	 */
-	create = function(name, attribs) { 
+	create = function(name, attribs) {
 		attribs = attribs || {};
 		var el = d.createElement(name),
 		i;
@@ -275,7 +275,7 @@ DecentDatepicker = (function(scope) {
 			// allow detection of synthetic events
 			event.synthetic = true;
 			input.dispatchEvent(event, true);
-			
+
 		// IE
 		} else if (input.fireEvent) {
 			event = doc.createEventObject();
@@ -333,7 +333,7 @@ DecentDatepicker = (function(scope) {
 
 	whenReady = function() {
 		if (!DecentDatepicker.has_native_datepicker()) {
-			listenForTriggeringEvents(d); 
+			listenForTriggeringEvents(d);
 		}
 	},
 

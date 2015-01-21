@@ -42,7 +42,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 			event.synthetic = true;
 			event.syntheticSource = 'decent-faux-select';
 			el.dispatchEvent(event, true);
-			
+
 		// IE
 		} else if (el.fireEvent) {
 			event = doc.createEventObject();
@@ -170,7 +170,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 
 			// allow a callback to affect the focusing
 			if (!options.preFocusOptionCallback || options.preFocusOptionCallback.call(this, select, optionIndex)) {
-				// if the focused-on faux option is not among the 
+				// if the focused-on faux option is not among the
 				// already-selected options, then we will select
 				// and trigger a change event.
 				while(i--) {
@@ -330,7 +330,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 		decent.attachListener(djs.doc, 'keydown', function(e) {
 			if (select.fauxFocused) {
 				select.fauxFocus(true);
-				return actOnKeydownEvents(e, select); 
+				return actOnKeydownEvents(e, select);
 			}
 		});
 		decent.attachListener(subject, 'change', function(evt) {
@@ -343,7 +343,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 	},
 
 	init = function() {
-		var i, option, 
+		var i, option,
 		opts = subject.getElementsByTagName('option');
 
 		initializeSelect(fauxSelect, subject);
@@ -365,7 +365,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 				fauxSelect.fauxFocusedOption = i;
 			}
 		}
-		i = 0 < fauxSelect.fauxFocusedOption ? fauxSelect.fauxFocusedOption : 0; 
+		i = 0 < fauxSelect.fauxFocusedOption ? fauxSelect.fauxFocusedOption : 0;
 		fauxSelect.fauxShowSelection(fauxSelect.fauxOptions[i] ? fauxSelect.fauxOptions[i].innerHTML : '');
 		decent.addClass(selectWrapper, 'faux-select-wrapper');
 		if (subject.getAttribute('tabindex')) {
