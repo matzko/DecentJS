@@ -7,7 +7,42 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 	ghost = create('input'),
 	ghostMatch = 0,
 	subject = djs.actionSubject,
-	subjectText = subject ? subject.value + '' : '',
+	/**
+	 * Set the value for the subject.
+	 *
+	 * @param [Object] value The value to set.
+	 */
+	setSubjectValue = function(value) {
+		if (subject) {
+			subject.value = value;
+			subject.setAttribute('data-autocomplete-value', value);
+			if (subject.contentEditable) {
+				subject.innerHTML = value;
+			}
+		}
+	},
+
+	/**
+	 * Get the value for the subject.
+	 *
+	 * @return [Object] The value of the subject.
+	 */
+	getSubjectValue = function() {
+		var theValue = '';
+		if (subject) {
+			if (subject.value) {
+				theValue = subject.value;
+			} else if (subject.getAttribute('data-autocomplete-value')) {
+				theValue = subject.getAttribute('data-autocomplete-value');
+			}
+			if (!theValue && subject.contentEditable && subject.innerHTML) {
+				theValue = subject.innerHTML + '';
+			}
+		}
+		return theValue;
+	},
+
+	subjectText = getSubjectValue(),
 	originalText = null,
 	generatedText = null,
 	lastKeyPressed,
@@ -17,7 +52,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 	canFetchList = true,
 	requestCache = {},
 	requestListData = function(subject, callback) {
-		callback.call(djs, subject.value,
+		callback.call(djs, getSubjectValue(),
 			(function(queryText) {
 				return function(data) {
 					setListData(queryText, data);
@@ -25,7 +60,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 						buildMatchingListFromData(queryText, data);
 					}
 				}
-			})(subject.value)
+			})(getSubjectValue())
 		);
 	},
 	listIsHidden = false,
@@ -247,19 +282,20 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			d.addClass(selections[activeSelection].getListItemNode(), 'state-focus');
 		}
 		if (null === originalText && null === generatedText) {
-			originalText = subject.value + '';
+			originalText = getSubjectValue() + '';
 		}
 		if (activeSelection && selections[activeSelection]) {
 			selections[activeSelection].trigger('selected');
-			subject.value = generatedText = selections[activeSelection].getPlainText();
+			generatedText = selections[activeSelection].getPlainText();
+			setSubjectValue(generatedText);
 			if (coreOptions['ghostFill']) {
 				ghost.value = selections[activeSelection].getPlainText();
 			}
 		} else {
-			subject.value = null === originalText ? '' : originalText;
+			setSubjectValue(null === originalText ? '' : originalText);
 			originalText = null;
 			generatedText = null;
-			ghost.value = subject.value;
+			ghost.value = getSubjectValue();
 		}
 	},
 	importantEvents = {
@@ -275,7 +311,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 		},
 		// tab
 		9:function(e) {
-			var text = subject.value ? subject.value : '';
+			var text = getSubjectValue() ? getSubjectValue() : '';
 			if (coreOptions['ghostFill'] && ghostMatch) {
 				// re-calculate ghost match on the current text
 				determineGhostMatch(text, selections);
@@ -296,7 +332,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			if (selections[activeSelection]) {
 				chooseSelection(activeSelection);
 			} else {
-				(new djs.autocomplete.SelectionItem({})).trigger('nothingChosen', [{text:subject.value}]);
+				(new djs.autocomplete.SelectionItem({})).trigger('nothingChosen', [{text:getSubjectValue()}]);
 			}
 			hideList();
 			djs.stopDefault(e);
@@ -326,7 +362,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 	eventKeypress = function(e) {
 		var characterCode = e.which || e.keyCode,
 		index,
-		text = subject.value ? subject.value : '',
+		text = getSubjectValue(),
 		theLetter;
 		if (characterCode) {
 			theLetter = String.fromCharCode(characterCode);
@@ -342,9 +378,9 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 		}
 	},
 	eventKeyup = function(e) {
-		var subjectText = text = subject.value ? subject.value : '';
+		var subjectText = text = getSubjectValue();
 		if (text.length >= coreOptions['minChars'] && canFetchList) {
-			if (!coreOptions['cache'] || !requestCache[subject.value]) {
+			if (!coreOptions['cache'] || !requestCache[getSubjectValue()]) {
 				requestListData(subject, callback);
 			}
 			canFetchList = false;
