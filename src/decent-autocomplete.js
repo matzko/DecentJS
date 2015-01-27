@@ -102,6 +102,8 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 		 * @return [integer] The matching level of the selection item.
 		 */
 		getMatchLevel = function(item, searchTerm) {
+			// remove "+" characters, as they mess up the regex
+			searchTerm = searchTerm.replace('+', '');
 			var level = 0;
 			// Best: beginning with the same word
 			if (item.matches(new RegExp('^' + searchTerm, 'i'))) {
