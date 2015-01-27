@@ -69,6 +69,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 		listIsHidden = true;
 		if (subject && subject.parentNode) {
 			subject.parentNode.style.zIndex = 90;
+			subject.style.zIndex = 210;
 		}
 	},
 	showList = function() {
@@ -76,6 +77,7 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 		listIsHidden = false;
 		if (subject && subject.parentNode) {
 			subject.parentNode.style.zIndex = 100;
+			subject.style.zIndex = 500;
 		}
 	},
 	list = create('ul'),
@@ -415,10 +417,9 @@ DecentJS.core.prototype.autocomplete = function(callback,options) {
 			ghost.className = (subject.className ? subject.className : '') + ' ghost-fill';
 			container.insertBefore(ghost, subject);
 
-			subject.parentNode.style.zIndex = 90;
 			subject.parentNode.style.zoom = 1;
 			ghost.style.zIndex = 200;
-			subject.style.zIndex = 500;
+			subject.style.zIndex = 210;
 
 			/**
 			 * IE8 seems to position the ghost on top of the subject input
