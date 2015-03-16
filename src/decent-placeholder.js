@@ -36,7 +36,9 @@ DecentJS.core.prototype.placeholder = function(options) {
 				ghost.type = (subject.type && 'password' != subject.type.toLowerCase()) ? subject.type : 'text';
 				ghost.className = (subject.className ? subject.className : '') + ' ghost-fill';
 				ghost.style.zoom = 1;
-				ghost.value = placeholderValue;
+				if (!subject.value) {
+					ghost.value = placeholderValue;
+				}
 
 				subject.style.zoom = 1;
 				subject.parentNode.insertBefore(ghost, subject);
@@ -63,6 +65,12 @@ DecentJS.core.prototype.placeholder = function(options) {
 						if (subject && subject.focus) {
 							subject.focus();
 						}
+					}
+				});
+
+				djs.attachListener('change', function(evt) {
+					if (!this.subject && !ghost.value && placeholderValue) {
+						ghost.value = placeholderValue;
 					}
 				});
 
