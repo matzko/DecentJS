@@ -218,20 +218,54 @@ DecentStickyContainer.prototype = {
 
 	/**
 	 * Hide the container.
+	 *
+	 * @param [Function] callback Optional.  Invoke the function once hiding is done.
+	 * @param [Boolean]  now      Optional.  Hide immediately instead of fading out.
 	 */
-	hide: function() {
+	hide: function(callback, now) {
+		now = !! now;
+		callback = callback || function() {};
 		if (this.wrapper) {
-			this.wrapper.style.display = 'none';
+			if (now) {
+				this.wrapper.style.display = 'none';
+				callback.call(this);
+			} else {
+				this.d(this.wrapper).fade(-1, (function(container, callback) {
+					return function() {
+						if (container.wrapper) {
+							container.wrapper.style.display = 'none';
+						}
+						callback.call(container);
+					};
+				})(this, callback));
+			}
 		}
 		return this;
 	},
 
 	/**
 	 * Show the container.
+	 *
+	 * @param [Function] callback Optional.  Invoke the function once showing is done.
+	 * @param [Boolean]  now      Optional.  Show immediately instead of fading in.
 	 */
-	show: function() {
+	show: function(callback, now) {
+		now = !! now;
+		callback = callback || function() {};
 		if (this.wrapper) {
-			this.wrapper.style.display = 'block';
+			if (now) {
+				this.wrapper.style.display = 'block';
+				callback.call(this);
+			} else {
+				this.d(this.wrapper).fade(1, (function(container, callback) {
+					return function() {
+						if (container.wrapper) {
+							container.wrapper.style.display = 'block';
+						}
+						callback.call(container);
+					};
+				})(this, callback));
+			}
 		}
 		return this;
 	},
@@ -399,7 +433,9 @@ var DecentSticky = (function() {
 	repositionStickies = function() {
 		for (var i in containers) {
 			(function(container) {
-				container.positionNearElement();
+				container.hide(function() {
+					this.positionNearElement().show();
+				});
 			})(containers[i]);
 		}
 	},
