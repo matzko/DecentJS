@@ -80,6 +80,18 @@ DecentJS.core.prototype.placeholder = function(options) {
 						// backspace
 						if (8 == characterCode) {
 							text = text.substring(0,(text.length-1));
+						} else if (13 == characterCode) {
+							// submit the form the subject is in
+							(function(el) {
+								var parentEl = el;
+								while(el) {
+									if (el && el.nodeName && 'FORM' == el.nodeName) {
+										el.submit();
+									}
+									el = el.parentNode;
+								}
+							})(subject);
+
 						} else {
 							theLetter = String.fromCharCode(characterCode);
 							if (theLetter && /[a-zA-Z]/.exec(theLetter)) {
