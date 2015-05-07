@@ -253,11 +253,13 @@ DecentStickyContainer.prototype = {
 			if (now) {
 				this.wrapper.style.display = 'none';
 				callback.call(this);
+				this._active = false;
 			} else {
 				this.d(this.wrapper).fade(-1, (function(container, callback) {
 					return function() {
 						if (container.wrapper) {
 							container.wrapper.style.display = 'none';
+							this._active = false;
 						}
 						callback.call(container);
 					};
@@ -280,6 +282,7 @@ DecentStickyContainer.prototype = {
 			if (now) {
 				this.wrapper.style.display = 'block';
 				callback.call(this);
+				this._active = true;
 			} else {
 				this.d(this.wrapper).fade(1, (function(container, callback) {
 					return function() {
@@ -287,11 +290,16 @@ DecentStickyContainer.prototype = {
 							container.wrapper.style.display = 'block';
 						}
 						callback.call(container);
+						this._active = true;
 					};
 				})(this, callback));
 			}
 		}
 		return this;
+	},
+
+	isActive:function() {
+		return !! this._active;
 	},
 
 	d:DecentJS,
@@ -459,10 +467,17 @@ var DecentSticky = (function() {
 			(function(container) {
 				container.hide(function() {
 					this.positionNearElement().show();
-				});
+				}, ! container.isActive());
 			})(containers[i]);
 		}
 	},
+
+	/**
+	 * Reposition all of the stickies, but not too often.
+	 */
+	repositionStickiesDebouncedCallback = (function() {
+		return decent.debounce(repositionStickies, 500);
+	})(),
 
 	/**
 	 * Calculate the density of text in a given area.
@@ -515,7 +530,7 @@ var DecentSticky = (function() {
 			var container = new DecentStickyContainer(message);
 			containers[container.getId()] = container;
 			container.setElement(el);
-			container.positionNearElement().show();
+			repositionStickiesDebouncedCallback();
 			return container;
 		}
 	},
@@ -565,6 +580,7 @@ var DecentSticky = (function() {
 		getElementWordDensity:getElementWordDensity,
 		getPotentialLocations:getPotentialLocations,
 		getTextDensity:getTextDensity,
+		repositionStickiesDebouncedCallback:repositionStickiesDebouncedCallback,
 		repositionStickies:repositionStickies,
 		showStickyForElement:showStickyForElement,
 		showStickyForId:showStickyForId,
