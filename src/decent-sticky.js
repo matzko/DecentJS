@@ -1,6 +1,8 @@
-var DecentStickyContainer = function(message) {
+var DecentStickyContainer = function(message, options) {
+	this._options = options || {};
 	this._id = 'sticky_container_' + (Math.floor((Math.random() * 100) + 1)) + new Date().getTime();
 	this._message = message;
+	this._active = false;
 	this.build();
 };
 DecentStickyContainer.prototype = {
@@ -126,16 +128,38 @@ DecentStickyContainer.prototype = {
 	},
 
 	/**
+	 * Get the amount in pixels that the viewport has scrolled from the top of the document.
+	 *
+	 * @return [Integer]
+	 */
+	getVerticalScrollAmount: function() {
+		var d = document,
+		browserTop = 0;
+		if ( d.documentElement && d.documentElement.scrollTop ) {
+			browserTop = d.documentElement.scrollTop;
+		} else if ( d.body && d.body.scrollTop ) {
+			browserTop = d.body.scrollTop;
+		} else if ( d.getElementsByTagName('body') ) {
+			browserTop = d.getElementsByTagName('body')[0].scrollTop;
+		}
+		return browserTop;
+	},
+
+	/**
 	 * Position the sticky container near the associated DOM Element.
 	 */
 	positionNearElement: function() {
-		if (this.getElement() && document.contains(this.getElement())) {
+		if (this.getElement() && document.body.contains(this.getElement())) {
 			var coords = this.getElement().getBoundingClientRect(),
 			potentialLocations = [], i,
-			viewPortDimens = DecentSticky.viewPortDimensions();
+			viewPortDimens = DecentSticky.viewPortDimensions(),
+			scrollAmount = this.getVerticalScrollAmount(),
+			elTop, elBottom;
 
 			if (coords && ('undefined' != typeof coords.top)) {
-				potentialLocations = DecentSticky.getPotentialLocations(coords.top, coords.right, coords.bottom, coords.left, this.getHeight(), this.getWidth());
+				elTop = coords.top + scrollAmount;
+				elBottom = coords.bottom + scrollAmount;
+				potentialLocations = DecentSticky.getPotentialLocations(elTop, coords.right, elBottom, coords.left, this.getHeight(), this.getWidth());
 				for (i = 0; i < potentialLocations.length; i++) {
 					// set ranking as a factor of the word density
 					potentialLocations[i].setRanking(potentialLocations[i].getRanking() + (DecentSticky.getTextDensity(
@@ -178,7 +202,7 @@ DecentStickyContainer.prototype = {
 				this.wrapper.style.left = potentialLocations[0].left + 'px';
 			} else {
 				this.setOrientation('down');
-				this.wrapper.style.top = coords.top ? (coords.top - this.getHeight() - 10): 0;
+				this.wrapper.style.top = elTop ? (elTop - this.getHeight() - 10): 0;
 				this.wrapper.style.left = coords.left ? coords.left - (this.getWidth() / 2) : 0;
 			}
 		}
