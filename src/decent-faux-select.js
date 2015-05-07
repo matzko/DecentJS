@@ -2,10 +2,15 @@
 if ('undefined' != typeof scope.DecentJS) {
 DecentJS.core.prototype.fauxSelect = function(options) {
 	options = options || {};
+	if (options.comboBox && ('undefined' == typeof DecentJS.core.prototype.autocomplete)) {
+		options.comboBox = false;
+	} else {
+		options.comboBox = !! options.comboBox;
+	}
 	var decent = DecentJS, djs = this,
 	create = function(t) { return djs.doc.createElement(t)},
 	selectWrapper = create('div'),
-	fauxSelectionIndicator = create('span'),
+	fauxSelectionIndicator = ((options.comboBox && options.inputCallback) ? create('input') : create('span')),
 	fauxSelect = create('ul'),
 	subject = djs.actionSubject,
 
@@ -70,35 +75,37 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 		 * @return [boolean] Whether an options was successfully selected.
 		 */
 		selectAccordingToContent = function(character) {
-			var totalOptions = select.fauxOptions.length,
-			startPoint = -1 < select.fauxFocusedOption && totalOptions > (select.fauxFocusedOption + 1) ?
-				select.fauxFocusedOption + 1 : 0,
-			i, matched = false,
+			if (!options.comboBox) {
+				var totalOptions = select.fauxOptions.length,
+				startPoint = -1 < select.fauxFocusedOption && totalOptions > (select.fauxFocusedOption + 1) ?
+					select.fauxFocusedOption + 1 : 0,
+				i, matched = false,
 
-			maybeSelectOption = function(i) {
-				var firstChar;
-				if (select.fauxOptions[i] && select.fauxOptions[i].innerHTML) {
-					firstChar = select.fauxOptions[i].innerHTML.substr(0,1);
-					if (firstChar.toLowerCase() == character.toLowerCase()) {
-						focusOnOption(select, i);
-						matched = true;
+				maybeSelectOption = function(i) {
+					var firstChar;
+					if (select.fauxOptions[i] && select.fauxOptions[i].innerHTML) {
+						firstChar = select.fauxOptions[i].innerHTML.substr(0,1);
+						if (firstChar.toLowerCase() == character.toLowerCase()) {
+							focusOnOption(select, i);
+							matched = true;
+						}
 					}
-				}
-				return matched;
-			};
-			for (i = startPoint; i < totalOptions; i++) {
-				if (maybeSelectOption(i)) {
-					break;
-				}
-			}
-			if (!matched) {
-				for (i = 0; i < startPoint; i++) {
+					return matched;
+				};
+				for (i = startPoint; i < totalOptions; i++) {
 					if (maybeSelectOption(i)) {
 						break;
 					}
 				}
+				if (!matched) {
+					for (i = 0; i < startPoint; i++) {
+						if (maybeSelectOption(i)) {
+							break;
+						}
+					}
+				}
+				return matched;
 			}
-			return matched;
 		},
 
 		/**
@@ -126,7 +133,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 			if (selectAccordingToContent(String.fromCharCode(e.keyCode))) {
 				decent.stopDefault(e);
 			}
-		} else {
+		} else if (!options.comboBox || select.fauxOpened) {
 			switch(e.keyCode) {
 
 				// up arrow
@@ -245,12 +252,18 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 				decent.addClass(select, 'faux-opened');
 				decent.removeClass(selectWrapper, 'faux-contents-unopened');
 				decent.addClass(selectWrapper, 'faux-contents-opened');
+				if (options.comboBox) {
+					selectWrapper.style.zIndex = 100;
+				}
 				select.fauxOpened = true;
 			} else {
 				decent.removeClass(select, 'faux-opened');
 				decent.addClass(select, 'faux-unopened');
 				decent.removeClass(selectWrapper, 'faux-contents-opened');
 				decent.addClass(selectWrapper, 'faux-contents-unopened');
+				if (options.comboBox) {
+					selectWrapper.style.zIndex = 90;
+				}
 				select.fauxOpened = false;
 			}
 		}
@@ -260,7 +273,11 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 		 * @param [string] selectedValue The value to show as the selected value.
 		 */
 		select.fauxShowSelection = function(selectedValue) {
-			fauxSelectionIndicator.innerHTML = selectedValue;
+			if (options.comboBox) {
+				fauxSelectionIndicator.value = selectedValue;
+			} else {
+				fauxSelectionIndicator.innerHTML = selectedValue;
+			}
 		}
 		decent.addClass(select, 'faux-select faux-unopened faux-unfocused');
 		decent.addClass(origSelect, 'faux-select-original');
@@ -285,13 +302,16 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 			return function(e) {
 				var target, originalTarget,
 				i = select.fauxOptions.length,
-				okToChangeState = true;
+				okToChangeState = true,
+				doActOnOpening = false,
+				preventDefaultEventBehavior = true;
 
 				// don't do anything if the real select is disabled
 				if (subject && subject.disabled) {
 					okToChangeState = false;
 				} else {
 					if (select.fauxOpened) {
+						doActOnOpening = true;
 						originalTarget = target = decent.getEventTarget(e);
 
 						// get ancestor that's a faux option
@@ -310,10 +330,19 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 						if (originalTarget && decent.hasClass(originalTarget, 'faux-select')) {
 							okToChangeState = false;
 						}
+					} else if (okToChangeState && options.comboBox && (target = decent.getEventTarget(e)) && decent.hasClass(target, 'faux-selection-arrow')) {
+						doActOnOpening = true;
 					}
-					decent.stopDefault(e);
+					if (target && ('INPUT' == target.nodeName) && decent.hasClass(target, 'faux-selection-indicator')) {
+						preventDefaultEventBehavior = false;
+					}
+					if (preventDefaultEventBehavior) {
+						decent.stopDefault(e);
+					}
 					if (okToChangeState) {
-						select.fauxOpen(!select.fauxOpened);
+						if (doActOnOpening || !options.comboBox || select.fauxOpened) {
+							select.fauxOpen(!select.fauxOpened);
+						}
 					}
 					select.fauxFocus(true);
 				}
@@ -344,7 +373,8 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 
 	init = function() {
 		var i, option,
-		opts = subject.getElementsByTagName('option');
+		opts = subject.getElementsByTagName('option'),
+		arrowHolder;
 
 		initializeSelect(fauxSelect, subject);
 
@@ -378,6 +408,21 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 		selectWrapper.appendChild(fauxSelectionIndicator);
 		subject.parentNode.insertBefore(selectWrapper, subject);
 		subject.parentNode.insertBefore(subject, selectWrapper);
+
+		if (options.comboBox && options.inputCallback) {
+			arrowHolder = djs.doc.createElement('span');
+			arrowHolder.className = 'faux-selection-arrow';
+			arrowHolder.style.zIndex = 220;
+			selectWrapper.appendChild(arrowHolder);
+			decent.attachListener(fauxSelectionIndicator, 'click', function(ev) {
+				this.focus();
+			});
+			decent(fauxSelectionIndicator).autocomplete((function(callback, djs) {
+				return function(inputValue, outputCallback) {
+					return callback.call(djs, inputValue, outputCallback, this);
+				};
+			})(options.inputCallback, djs), {ghostFill:false});
+		}
 	};
 
 	// Don't double-up the faux selections, if called multiple times for the same subject.
