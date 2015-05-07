@@ -85,6 +85,11 @@
 			request.onreadystatechange = function() {
 				if ( 4 == request.readyState ) {
 					request.onreadystatechange = function() {};
+					// fix an IE status bug
+					// http://stackoverflow.com/questions/10046972/msie-returns-status-code-of-1223-for-ajax-request
+					if (request.status && ((1223 == request.status) || (200 <= request.status && 300 > request.status))) {
+						request.success = true;
+					}
 					if (request.getResponseHeader && (new RegExp('^application/json','i')).exec(request.getResponseHeader('content-type'))) {
 						if (scope.JSON) {
 							callback.call(request, scope.JSON.parse(request.responseText));
