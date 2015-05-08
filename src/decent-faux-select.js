@@ -413,6 +413,7 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 			arrowHolder = djs.doc.createElement('span');
 			arrowHolder.className = 'faux-selection-arrow';
 			arrowHolder.style.zIndex = 220;
+			decent.addClass(selectWrapper, 'faux-combo-box');
 			selectWrapper.appendChild(arrowHolder);
 			decent.attachListener(fauxSelectionIndicator, 'click', function(ev) {
 				this.focus();
