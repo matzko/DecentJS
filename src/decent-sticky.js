@@ -245,8 +245,9 @@ DecentStickyContainer.prototype = {
 	 */
 	clear: function() {
 		if (this.wrapper) {
-			decent(this.wrapper).fade(-1, function() {
-				this.wrapper.parentNode.removeChild(container.wrapper);
+			var wrapper = this.wrapper;
+			DecentJS(wrapper).fade(-1, function() {
+				wrapper.parentNode.removeChild(wrapper);
 			});
 		}
 	},
