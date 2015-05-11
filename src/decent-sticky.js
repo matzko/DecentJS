@@ -241,6 +241,17 @@ DecentStickyContainer.prototype = {
 	},
 
 	/**
+	 * Clear the container from the DOM.
+	 */
+	clear: function() {
+		if (this.wrapper) {
+			decent(this.wrapper).fade(-1, function() {
+				this.wrapper.parentNode.removeChild(container.wrapper);
+			});
+		}
+	},
+
+	/**
 	 * Hide the container.
 	 *
 	 * @param [Function] callback Optional.  Invoke the function once hiding is done.
@@ -372,13 +383,7 @@ var DecentSticky = (function() {
 	clearStickies = function() {
 		for (var i in containers) {
 			if (containers[i]) {
-				(function(container) {
-					if (container.wrapper) {
-						decent(container.wrapper).fade(-1, function() {
-							container.wrapper.parentNode.removeChild(container.wrapper);
-						});
-					}
-				})(containers[i]);
+				containers[i].clear();
 			}
 		}
 		containers = {};
