@@ -256,6 +256,21 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 					selectWrapper.style.zIndex = 100;
 				}
 				select.fauxOpened = true;
+				// scroll to the selected element
+				(function(wrapper) {
+					if (wrapper) {
+						var listContainer, selectedListElement;
+						decent.eachChildWithClass(wrapper, 'faux-select', function() {
+							listContainer = this;
+						});
+						decent.eachChildWithClass(wrapper, 'faux-selected', function() {
+							selectedListElement = this;
+						});
+						if (selectedListElement && selectedListElement.offsetTop) {
+							listContainer.scrollTop = selectedListElement.offsetTop;
+						}
+					}
+				})(selectWrapper);
 			} else {
 				decent.removeClass(select, 'faux-opened');
 				decent.addClass(select, 'faux-unopened');
