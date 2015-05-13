@@ -248,6 +248,8 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 		select.fauxOpened = false;
 		select.fauxOpen = function(doOpen) {
 			if (doOpen) {
+				fillOptions(fauxSelect, subject.getElementsByTagName('option'));
+
 				decent.removeClass(select, 'faux-unopened');
 				decent.addClass(select, 'faux-opened');
 				decent.removeClass(selectWrapper, 'faux-contents-unopened');
@@ -386,13 +388,16 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 		});
 	},
 
-	init = function() {
-		var i, option,
-		opts = subject.getElementsByTagName('option'),
-		arrowHolder;
-
-		initializeSelect(fauxSelect, subject);
-
+	/**
+	 * Fill the faux select element with list elements based on the original select.
+	 *
+	 * @oaram [DOMElement]        fauxSelect The faux select, a <ul> element.
+	 * @param [Array<DOMElement>] opts       The array of <option> elements from the original <select>.
+	 */
+	fillOptions = function(fauxSelect, opts) {
+		var i, option;
+		fauxSelect.innerHTML = '';
+		fauxSelect.fauxOptions = [];
 		for(i = 0; i < opts.length; i++) {
 			option = create('li');
 			option.setAttribute('data-value', opts[i].value);
@@ -407,9 +412,19 @@ DecentJS.core.prototype.fauxSelect = function(options) {
 			fauxSelect.appendChild(option);
 			fauxSelect.fauxOptions[i] = option;
 			if (opts[i].selected) {
+				decent.addClass(option, 'faux-selected');
 				fauxSelect.fauxFocusedOption = i;
 			}
 		}
+	},
+
+	init = function() {
+		var i, option,
+		arrowHolder;
+
+		initializeSelect(fauxSelect, subject);
+		fillOptions(fauxSelect, subject.getElementsByTagName('option'));
+
 		i = 0 < fauxSelect.fauxFocusedOption ? fauxSelect.fauxFocusedOption : 0;
 		fauxSelect.fauxShowSelection(fauxSelect.fauxOptions[i] ? fauxSelect.fauxOptions[i].innerHTML : '');
 		decent.addClass(selectWrapper, 'faux-select-wrapper');
