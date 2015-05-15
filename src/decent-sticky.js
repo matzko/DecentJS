@@ -246,11 +246,18 @@ DecentStickyContainer.prototype = {
 	 */
 	clear: function() {
 		if (this.wrapper) {
-			var wrapper = this.wrapper;
-			DecentJS(wrapper).fade(-1, function() {
-				wrapper.parentNode.removeChild(wrapper);
-			});
+			(function(container) {
+				var wrapper = container.wrapper;
+				DecentJS(wrapper).fade(-1, function() {
+					wrapper.parentNode.removeChild(wrapper);
+					container._cleared = true;
+				});
+			})(this);
 		}
+	},
+
+	isCleared: function() {
+		return !! this._cleared;
 	},
 
 	/**
