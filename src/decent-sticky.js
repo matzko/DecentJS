@@ -175,7 +175,8 @@ DecentStickyContainer.prototype = {
 					} else if (
 						viewPortDimens.width && viewPortDimens.height && (
 							potentialLocations[i].right > viewPortDimens.width ||
-							potentialLocations[i].bottom > viewPortDimens.height
+							potentialLocations[i].bottom > (scrollAmount + viewPortDimens.height) ||
+							potentialLocations[i].top < scrollAmount
 						)
 					) {
 						potentialLocations[i].setRanking(potentialLocations[i].getRanking() + 500);
