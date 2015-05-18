@@ -3,6 +3,7 @@ var DecentStickyContainer = function(message, options) {
 	this._id = 'sticky_container_' + (Math.floor((Math.random() * 100) + 1)) + new Date().getTime();
 	this._message = message;
 	this._active = false;
+	this._elementsToAvoid = [];
 	this.build();
 };
 DecentStickyContainer.prototype = {
@@ -180,6 +181,22 @@ DecentStickyContainer.prototype = {
 						)
 					) {
 						potentialLocations[i].setRanking(potentialLocations[i].getRanking() + 500);
+
+					// if any part of the location overlaps an element to avoid, penalize it
+					} else if (0 < this._elementsToAvoid.length) {
+						(function(elementsToAvoid) {
+							var j = elementsToAvoid.length,
+							elCoords, avoidLocation;
+							while(j--) {
+								elCoords = elementsToAvoid[j].getBoundingClientRect();
+								if ('undefined' != typeof elCoords.top) {
+									avoidLocation = new DecentStickyLocation(elCoords.top + scrollAmount, elCoords.right, elCoords.bottom + scrollAmount, elCoords.left);
+									if (avoidLocation && avoidLocation.overlapsWith(potentialLocations[i])) {
+										potentialLocations[i].setRanking(potentialLocations[i].getRanking() + 1000);
+									}
+								}
+							}
+						})(this._elementsToAvoid);
 					}
 				}
 				potentialLocations.sort(DecentSticky.sortByRanking);
@@ -206,6 +223,19 @@ DecentStickyContainer.prototype = {
 				this.wrapper.style.top = elTop ? (elTop - this.getHeight() - 10): 0;
 				this.wrapper.style.left = coords.left ? coords.left - (this.getWidth() / 2) : 0;
 			}
+		}
+		return this;
+	},
+
+	/**
+	 * Set a list of elements to avoid.
+	 *
+	 * @param [NodeList|Array<DOMElement>] elements Elements especially to avoid.
+	 */
+	setElementsToAvoid: function(elements) {
+		var i = elements.length;
+		while(i--) {
+			this._elementsToAvoid[this._elementsToAvoid.length] = elements[i];
 		}
 		return this;
 	},
@@ -373,6 +403,22 @@ DecentStickyLocation.prototype = {
 	 */
 	getRanking: function() {
 		return this._prefRanking;
+	},
+
+	/**
+	 * Whether the location overlaps with the other given location.
+	 *
+	 * @param [DecentStickyLocation] other
+	 *
+	 * @return [Boolean] Whether the two locations overlap.
+	 */
+	overlapsWith: function(other) {
+		return !! (
+			this.left < other.right &&
+			this.right > other.left &&
+			this.top < other.bottom &&
+			this.bottom > other.top
+		);
 	}
 };
 /**
@@ -538,10 +584,15 @@ var DecentSticky = (function() {
 	 *
 	 * @param [DOMElement] el      The element for which to show a sticky message.
 	 * @param [String]     message The message to show.
+	 * @param [Object]     options Optional.  Options for the sticky element.
 	 */
-	showStickyForElement = function(el, message) {
+	showStickyForElement = function(el, message, options) {
+		options = options || {};
 		if (el) {
 			var container = new DecentStickyContainer(message);
+			if (options.elementsToAvoid) {
+				container.setElementsToAvoid(options.elementsToAvoid);
+			}
 			containers[container.getId()] = container;
 			container.setElement(el);
 			repositionStickiesDebouncedCallback();
