@@ -764,7 +764,9 @@
 	 */
 	each = function(collection, callback) {
 		for (var i = 0; i < collection.length; i++) {
-			callback.call(collection[i], i);
+			if (false === callback.call(collection[i], i)) {
+				break;
+			}
 		}
 	},
 

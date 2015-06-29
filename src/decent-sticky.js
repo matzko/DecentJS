@@ -110,6 +110,25 @@ DecentStickyContainer.prototype = {
 	},
 
 	/**
+	 * Set the current location of the container element.
+	 *
+	 * @param [DecentStickyLocation] location
+	 */
+	setCurrentLocation: function(location) {
+		this._currentLocation = location;
+		return this;
+	},
+
+	/**
+	 * Get the current location of the container element.
+	 *
+	 * @return [DecentStickyLocation]
+	 */
+	getCurrentLocation: function() {
+		return this._currentLocation;
+	},
+
+	/**
 	 * Set the width of the container element.
 	 *
 	 * @param [Integer] width The width in pixels of the container.
@@ -155,9 +174,15 @@ DecentStickyContainer.prototype = {
 			potentialLocations = [], i,
 			viewPortDimens = DecentSticky.viewPortDimensions(),
 			scrollAmount = this.getVerticalScrollAmount(),
-			elTop, elBottom;
+			elTop, elBottom, dialogContainer = (this.wc.isChrome() ? this.wc.insideMatchingElement(this.getElement(), {nodeName: 'DIALOG'}) : null),
+			dialogCoords = {top:0, right:0, left:0, bottom: 0};
 
 			if (coords && ('undefined' != typeof coords.top)) {
+				if (dialogContainer) {
+					dialogCoords = dialogContainer.getBoundingClientRect();
+					dialogContainer.appendChild(this.wrapper);
+					scrollAmount = 0;
+				}
 				elTop = coords.top + scrollAmount;
 				elBottom = coords.bottom + scrollAmount;
 				potentialLocations = DecentSticky.getPotentialLocations(elTop, coords.right, elBottom, coords.left, this.getHeight(), this.getWidth());
@@ -216,12 +241,14 @@ DecentStickyContainer.prototype = {
 						this.setOrientation('right');
 						break;
 				}
-				this.wrapper.style.top = potentialLocations[0].top + 'px';
-				this.wrapper.style.left = potentialLocations[0].left + 'px';
+				this.wrapper.style.top = potentialLocations[0].top - dialogCoords.top + 'px';
+				this.wrapper.style.left = potentialLocations[0].left - dialogCoords.left + 'px';
+				this.setCurrentLocation(potentialLocations[0]);
 			} else {
 				this.setOrientation('down');
-				this.wrapper.style.top = elTop ? (elTop - this.getHeight() - 10): 0;
-				this.wrapper.style.left = coords.left ? coords.left - (this.getWidth() / 2) : 0;
+				this.setCurrentLocation(null);
+				this.wrapper.style.top = (elTop ? (elTop - this.getHeight() - 10): 0) - dialogCoords.top + 'px';
+				this.wrapper.style.left = (coords.left ? coords.left - (this.getWidth() / 2) - dialogCoords.left : 0) + 'px';
 			}
 		}
 		return this;
@@ -279,8 +306,10 @@ DecentStickyContainer.prototype = {
 			(function(container) {
 				var wrapper = container.wrapper;
 				DecentJS(wrapper).fade(-1, function() {
-					wrapper.parentNode.removeChild(wrapper);
-					container._cleared = true;
+					if (wrapper && wrapper.parentNode) {
+						wrapper.parentNode.removeChild(wrapper);
+						container._cleared = true;
+					}
 				});
 			})(this);
 		}
