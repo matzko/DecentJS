@@ -792,7 +792,13 @@
 		initialized = true;
 
 		for (i = 0; i < loadedCallbacks.length; i++) {
-			loadedCallbacks[i].call(this,DecentJS);
+			try {
+				loadedCallbacks[i].call(this,DecentJS);
+			} catch(err) {
+				if (scope.console && scope.console.error) {
+					scope.console.error.call(console, err);
+				}
+			}
 		}
 	},
 
