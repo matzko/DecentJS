@@ -919,6 +919,7 @@
 	DecentJS.eventHalt = eventHalt;
 	DecentJS.stopDefault = stopDefault;
 	DecentJS.getEventTarget = getEventTarget;
+	DecentJS.urlencode = urlencode;
 	DecentJS.isObjProperty = isObjProp;
 	DecentJS.Animation = Animation;
 
