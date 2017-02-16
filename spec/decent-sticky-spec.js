@@ -43,6 +43,483 @@ describe("DecentSticky: Creating and showing sticky notes.", function() {
 		});
 	});
 });
+describe("DecentStickyAction: Representing sticky note actions.", function() {
+	describe("contravenes: determining when two actions contravene each other", function() {
+		var oneAction, anotherAction,
+		oneElement, anotherElement,
+		testSubject = function() {
+			return oneAction.contravenes(anotherAction);
+		};
+
+		describe("when the actions have to do with the same element", function() {
+			beforeEach(function() {
+				oneElement = affix('#div').get(0);
+				anotherElement = oneElement;
+			});
+
+			describe("when one action is clearing", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'clear');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("contravenes", function() {
+						expect(testSubject()).toBeTruthy();
+					});
+				});
+			});
+
+			describe("when one action is hiding", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'hide');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("contravenes", function() {
+						expect(testSubject()).toBeTruthy();
+					});
+				});
+			});
+
+			describe("when one action is showing", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'show');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("contravenes", function() {
+						expect(testSubject()).toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("contravenes", function() {
+						expect(testSubject()).toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+			});
+		});
+
+		describe("when the actions have to do with different elements", function() {
+			beforeEach(function() {
+				oneElement = affix('#div').get(0);
+				anotherElement = affix('#div').get(0);
+			});
+
+			describe("when one action is clearing", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'clear');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+			});
+
+			describe("when one action is hiding", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'hide');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+			});
+
+			describe("when one action is showing", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'show');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("doesn't contravene", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+			});
+		});
+	});
+
+	describe("equals: determining when two actions equal each other", function() {
+		var oneAction, anotherAction,
+		oneElement, anotherElement,
+		testSubject = function() {
+			return oneAction.equals(anotherAction);
+		};
+
+		describe("when the actions have to do with the same element", function() {
+			beforeEach(function() {
+				oneElement = affix('#div').get(0);
+				anotherElement = oneElement;
+			});
+
+			describe("when one action is clearing", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'clear');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("equals", function() {
+						expect(testSubject).toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+			});
+
+			describe("when one action is hiding", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'hide');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("equals", function() {
+						expect(testSubject).toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+			});
+
+			describe("when one action is showing", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'show');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("equals", function() {
+						expect(testSubject).toBeTruthy();
+					});
+				});
+			});
+		});
+
+		describe("when the actions have to do with different elements", function() {
+			beforeEach(function() {
+				oneElement = affix('#div').get(0);
+				anotherElement = affix('#div').get(0);
+			});
+
+			describe("when one action is clearing", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'clear');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+			});
+
+			describe("when one action is hiding", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'hide');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+			});
+
+			describe("when one action is showing", function() {
+				beforeEach(function() {
+					oneAction = new DecentStickyAction(function() {}, oneElement, 'show');
+				});
+
+				describe("when the other action is clearing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'clear');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is hiding", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'hide');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+
+				describe("when the other action is showing", function() {
+					beforeEach(function() {
+						anotherAction = new DecentStickyAction(function() {}, anotherElement, 'show');
+					});
+
+					it("doesn't equal", function() {
+						expect(testSubject()).not.toBeTruthy();
+					});
+				});
+			});
+		});
+	});
+});
 describe("DecentStickyLocation: Representing the locations of sticky notes.", function() {
 	describe("DecentStickyLocation.overlapsWith: Determining whether two locations overlap.", function() {
 		var locationA, locationB;

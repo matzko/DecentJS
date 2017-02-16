@@ -315,17 +315,25 @@ DecentStickyContainer.prototype = {
 	 * Clear the container from the DOM.
 	 */
 	clear: function() {
-		if (this.wrapper) {
-			(function(container) {
-				var wrapper = container.wrapper;
-				DecentJS(wrapper).fade(-1, function() {
-					if (wrapper && wrapper.parentNode) {
-						wrapper.parentNode.removeChild(wrapper);
-						container._cleared = true;
-					}
-				});
-			})(this);
-		}
+		var action = new DecentStickyAction((function(self) {
+			var theElement = self.getElement();
+			return function() {
+				if (self.wrapper) {
+					(function(container) {
+						var wrapper = container.wrapper;
+						DecentStickyAction.lockElement(theElement);
+						DecentJS(wrapper).fade(-1, function() {
+							if (wrapper && wrapper.parentNode) {
+								wrapper.parentNode.removeChild(wrapper);
+								container._cleared = true;
+								DecentStickyAction.unlockElement(theElement);
+							}
+						});
+					})(self);
+				}
+			};
+		})(this), this.getElement(), 'clear');
+		action.schedule();
 	},
 
 	isCleared: function() {
@@ -341,24 +349,32 @@ DecentStickyContainer.prototype = {
 	hide: function(callback, now) {
 		now = !! now;
 		callback = callback || function() {};
-		if (this.wrapper) {
-			if (now) {
-				this.wrapper.style.display = 'none';
-				callback.call(this);
-				this._active = false;
-			} else {
-				this.d(this.wrapper).fade(-1, (function(container, callback) {
-					return function() {
-						if (container.wrapper) {
-							container.wrapper.style.display = 'none';
-							this._active = false;
-						}
-						callback.call(container);
-					};
-				})(this, callback));
-			}
-		}
-		return this;
+		var action = new DecentStickyAction((function(self, callback, now) {
+			var theElement = self.getElement();
+			return function() {
+				if (self.wrapper) {
+					if (now) {
+						self.wrapper.style.display = 'none';
+						callback.call(self);
+						self._active = false;
+					} else {
+						DecentStickyAction.lockElement(theElement);
+						self.d(self.wrapper).fade(-1, (function(container, callback) {
+							return function() {
+								if (container.wrapper) {
+									container.wrapper.style.display = 'none';
+									self._active = false;
+								}
+								DecentStickyAction.unlockElement(theElement);
+								callback.call(container);
+							};
+						})(self, callback));
+					}
+				}
+				return self;
+			};
+		})(this, callback, now), this.getElement(), 'hide');
+		action.schedule();
 	},
 
 	/**
@@ -370,28 +386,255 @@ DecentStickyContainer.prototype = {
 	show: function(callback, now) {
 		now = !! now;
 		callback = callback || function() {};
-		if (this.wrapper) {
-			if (now) {
-				this.wrapper.style.display = 'block';
-				callback.call(this);
-				this._active = true;
-			} else {
-				this.d(this.wrapper).fade(1, (function(container, callback) {
-					return function() {
-						if (container.wrapper) {
-							container.wrapper.style.display = 'block';
-						}
-						callback.call(container);
-						this._active = true;
-					};
-				})(this, callback));
-			}
-		}
-		return this;
+		var action = new DecentStickyAction((function(self, callback, now) {
+			var theElement = self.getElement();
+			return function() {
+				if (self.wrapper) {
+					if (now) {
+						self.wrapper.style.display = 'block';
+						callback.call(self);
+						self._active = true;
+					} else {
+						DecentStickyAction.lockElement(theElement);
+						self.d(self.wrapper).fade(1, (function(container, callback) {
+							return function() {
+								if (container.wrapper) {
+									container.wrapper.style.display = 'block';
+								}
+								DecentStickyAction.unlockElement(theElement);
+								callback.call(container);
+								self._active = true;
+							};
+						})(self, callback));
+					}
+				}
+				return self;
+			};
+		})(this, callback, now), this.getElement(), 'show');
+		action.schedule();
 	},
 
 	isActive:function() {
 		return !! this._active;
+	},
+
+	d:DecentJS,
+	wc:WeCounsel
+};
+/**
+ * Constructor for the sticky action.
+ */
+var DecentStickyAction = function(callback, el, actionType, delay) {
+	actionType = actionType || null;
+	this._callback = callback || function() {};
+	this._id = 'sticky_action_' + (Math.floor((Math.random() * 100) + 1)) + new Date().getTime();
+	if (this.wc.arrayContains(['clear','hide','show'], actionType)) {
+		this._actionType = actionType;
+	}
+	this._active = true;
+	this._el = el;
+	this._delay = delay || 200;
+	this._atTime = null;
+};
+DecentStickyAction.actionQueue = [];
+DecentStickyAction.lockedElements = [];
+DecentStickyAction.elementIsLocked = function(el) {
+	var i = DecentStickyAction.lockedElements.length,
+	now = new Date().valueOf(),
+	elIndex = null,
+	isLocked = false,
+	item;
+	while(i--) {
+		if ((item = DecentStickyAction.lockedElements[i]) && item.element && (item.element == el)) {
+			elIndex = i;
+			if (item.time && (now - item.time) < 2500) {
+				isLocked = true;
+			}
+		}
+	}
+	// if the lock is stale, clear it out
+	if (!isLocked && (null !== elIndex)) {
+		DecentStickyAction.lockedElements.splice(elIndex, 1);
+		// console.log('unlocked index because expired', elIndex);
+	}
+	return isLocked;
+};
+DecentStickyAction.lockElement = function(el) {
+	if (!DecentStickyAction.elementIsLocked(el)) {
+		DecentStickyAction.lockedElements[DecentStickyAction.lockedElements.length] = {element: el, time: new Date().valueOf()};
+	}
+};
+DecentStickyAction.unlockElement = function(el) {
+	var i, elIndex = null, item;
+	for (i = 0; i < DecentStickyAction.lockedElements.length; i++) {
+		if ((item = DecentStickyAction.lockedElements[i]) && item.element && (item.element == el)) {
+			elIndex = i;
+		}
+	}
+	if (null !== elIndex) {
+		DecentStickyAction.lockedElements.splice(elIndex, 1);
+	}
+};
+/**
+ * Perform one of the actions.
+ *
+ * @param [DecentStickyAction] action
+ */
+DecentStickyAction.doAnAction = function(action) {
+	var matchingElements = [], i, actionIndex, result;
+
+	// get an array of actions relevant to the given action's element
+	if (action.getElement()) {
+		for (i = 0; i < DecentStickyAction.actionQueue.length; i++) {
+			if (action.getElement() == DecentStickyAction.actionQueue[i].getElement()) {
+				matchingElements[matchingElements.length] = DecentStickyAction.actionQueue[i];
+			}
+		}
+		if (0 < matchingElements.length) {
+			matchingElements.sort(function(a, b) {
+				if (a.occurrenceTime() && b.occurrenceTime()) {
+					return ((a.occurrenceTime() < b.occurrenceTime()) ? -1 : 1);
+				} else {
+					return 0;
+				}
+			});
+			actionIndex = null;
+			for (i = 0; i < matchingElements.length; i++) {
+				if ((null === actionIndex) && action.getId() && (matchingElements[i].getId() == action.getId())) {
+					actionIndex = i;
+				} else if ((null != actionIndex) && (i > actionIndex)) {
+					if (matchingElements[i].contravenes(action)) {
+						action.deactivate();
+					} else if (matchingElements[i].equals(action)) {
+						matchingElements[i].deactivate();
+					}
+				}
+			}
+
+			if (!DecentStickyAction.elementIsLocked(action.getElement())) {
+				result = action.act();
+			}
+			action.deactivate();
+		}
+	}
+	return result;
+};
+DecentStickyAction.prototype = {
+	/**
+	 * Do the action in this action, if not contravened or duplicated.
+	 */
+	act: function() {
+		if (this.isActive()) {
+			return this._callback.call(this);
+		}
+	},
+
+	/**
+	 * Whether the other sticky action contravenes this action.
+	 *
+	 * @param [DecentStickyAction] other
+	 *
+	 * @return [Boolean]
+	 */
+	contravenes: function(other) {
+		var self = this;
+		if (
+			(other.getElement() == self.getElement()) &&
+			(other.getActionType() != self.getActionType())
+		) {
+			if (
+				(
+					('show' == self.getActionType()) &&
+					self.wc.arrayContains(['clear', 'hide'], other.getActionType())
+				) || (
+					('show' == other.getActionType()) &&
+					other.wc.arrayContains(['clear', 'hide'], self.getActionType())
+				)
+			) {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	},
+
+	/**
+	 * Deactivate the action.
+	 */
+	deactivate: function() {
+		this._active = false;
+		return this;
+	},
+
+	/**
+	 * Whether the other sticky action equals this action.
+	 *
+	 * @param [DecentStickyAction] other
+	 *
+	 * @return [Boolean]
+	 */
+	equals: function(other) {
+		var self = this;
+		return (
+			(other.getElement() == self.getElement()) &&
+			(other.getActionType() == self.getActionType())
+		);
+	},
+
+	/**
+	 * Get the action type associated with the sticky action.
+	 *
+	 * @return [String]
+	 */
+	getActionType: function() {
+		return this._actionType;
+	},
+
+	/**
+	 * Get the element associated with the sticky action.
+	 *
+	 * @return [DOMElement]
+	 */
+	getElement: function() {
+		return this._el;
+	},
+
+	/**
+	 * Get the Id of the action.
+	 *
+	 * @return [String]
+	 */
+	getId: function() {
+		return this._id;
+	},
+
+	isActive:function() {
+		return !! this._active;
+	},
+
+	occurrenceTime: function() {
+		return this._atTime;
+	},
+
+	/**
+	 * Schedule an action to occur.
+	 */
+	schedule: function() {
+		var self = this,
+		occurrenceTime = new Date();
+		DecentStickyAction.actionQueue[DecentStickyAction.actionQueue.length] = self;
+		setTimeout((function(action) {
+			return function() {
+				if (action.isActive()) {
+					return DecentStickyAction.doAnAction.call(this, action);
+				} else {
+					return null;
+				}
+			};
+		})(self), self._delay);
+		occurrenceTime.setMilliseconds(occurrenceTime.getMilliseconds() + self._delay);
+		self._atTime = occurrenceTime;
+		return self;
 	},
 
 	d:DecentJS,
