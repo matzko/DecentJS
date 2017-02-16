@@ -7,10 +7,24 @@ var DecentStickyContainer = function(message, options) {
 	this._classes = [];
 	this.build();
 };
+DecentStickyContainer.isChrome = (function() {
+	var determination = null;
+	return function() {
+		if (null === determination) {
+			var isChromium = window.chrome, vendorName = window.navigator.vendor;
+			if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc.") {
+				determination = true;
+			} else {
+				determination = false;
+			}
+		}
+		return determination;
+	};
+})();
 DecentStickyContainer.prototype = {
 	build: function() {
-		var body = this.wc.getBodyElement(),
-		doc = document,
+		var doc = document,
+		body = doc.getElementsByTagName('body')[0],
 		wrapper = doc.createElement('div'),
 		innerContainer = doc.createElement('div');
 		arrow = doc.createElement('span'),
@@ -34,7 +48,7 @@ DecentStickyContainer.prototype = {
 		wrapper.style.visibility = 'visible';
 
 		button.className = 'close';
-		button.title = this.wc.t('close_modal');
+		button.title = 'Close';
 		button.innerHTML = 'x';
 		button.onclick = (function(wrapper, container) {
 			return function() {
@@ -177,7 +191,7 @@ DecentStickyContainer.prototype = {
 			potentialLocations = [], i,
 			viewPortDimens = DecentSticky.viewPortDimensions(),
 			scrollAmount = this.getVerticalScrollAmount(),
-			elTop, elBottom, dialogContainer = (this.wc.isChrome() ? this.wc.insideMatchingElement(this.getElement(), {nodeName: 'DIALOG'}) : null),
+			elTop, elBottom, dialogContainer = (DecentStickyContainer.isChrome() ? this.d.insideMatchingElement(this.getElement(), {nodeName: 'DIALOG'}) : null),
 			dialogCoords = {top:0, right:0, left:0, bottom: 0};
 
 			if (coords && ('undefined' != typeof coords.top)) {
@@ -421,8 +435,7 @@ DecentStickyContainer.prototype = {
 		return !! this._active;
 	},
 
-	d:DecentJS,
-	wc:WeCounsel
+	d:DecentJS
 };
 /**
  * Constructor for the sticky action.
@@ -431,7 +444,7 @@ var DecentStickyAction = function(callback, el, actionType, delay) {
 	actionType = actionType || null;
 	this._callback = callback || function() {};
 	this._id = 'sticky_action_' + (Math.floor((Math.random() * 100) + 1)) + new Date().getTime();
-	if (this.wc.arrayContains(['clear','hide','show'], actionType)) {
+	if (this.d.arrayContains(['clear','hide','show'], actionType)) {
 		this._actionType = actionType;
 	}
 	this._active = true;
@@ -548,10 +561,10 @@ DecentStickyAction.prototype = {
 			if (
 				(
 					('show' == self.getActionType()) &&
-					self.wc.arrayContains(['clear', 'hide'], other.getActionType())
+					self.d.arrayContains(['clear', 'hide'], other.getActionType())
 				) || (
 					('show' == other.getActionType()) &&
-					other.wc.arrayContains(['clear', 'hide'], self.getActionType())
+					other.d.arrayContains(['clear', 'hide'], self.getActionType())
 				)
 			) {
 				return true;
@@ -640,8 +653,7 @@ DecentStickyAction.prototype = {
 		return self;
 	},
 
-	d:DecentJS,
-	wc:WeCounsel
+	d:DecentJS
 };
 /**
  * Constructor for the sticky location.
@@ -714,8 +726,7 @@ DecentStickyLocation.prototype = {
  */
 var DecentSticky = (function() {
 
-	var wc = WeCounsel,
-	decent = DecentJS,
+	var decent = DecentJS,
 	doc = document,
 	w = window,
 	containers = {},
@@ -871,7 +882,7 @@ var DecentSticky = (function() {
 			if (element) {
 				density = (10000 * getElementWordDensity(element));
 				/** Increase the density if the element is a UI element. **/
-				if (wc.arrayContains(['INPUT', 'LABEL', 'SELECT', 'TH'], element.nodeName)) {
+				if (decent.arrayContains(['INPUT', 'LABEL', 'SELECT', 'TH'], element.nodeName)) {
 					density += 50;
 				}
 				samples[samples.length] = density;
