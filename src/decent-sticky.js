@@ -4,6 +4,7 @@ var DecentStickyContainer = function(message, options) {
 	this._message = message;
 	this._active = false;
 	this._elementsToAvoid = [];
+	this._classes = [];
 	this.build();
 };
 DecentStickyContainer.prototype = {
@@ -250,6 +251,18 @@ DecentStickyContainer.prototype = {
 				this.wrapper.style.top = (elTop ? (elTop - this.getHeight() - 10): 0) - dialogCoords.top + 'px';
 				this.wrapper.style.left = (coords.left ? coords.left - (this.getWidth() / 2) - dialogCoords.left : 0) + 'px';
 			}
+		}
+		return this;
+	},
+
+	/**
+	 * Set additional, optional classes for the sticky container.
+	 *
+	 * @param [Array<String>] classes
+	 */
+	setContainerClasses: function(classes) {
+		if (this.wrapper && classes) {
+			this.wrapper.className = this.wrapper.className + ' ' + classes.join(' ')
 		}
 		return this;
 	},
@@ -621,6 +634,12 @@ var DecentSticky = (function() {
 			var container = new DecentStickyContainer(message);
 			if (options.elementsToAvoid) {
 				container.setElementsToAvoid(options.elementsToAvoid);
+			}
+			if (options.classes) {
+				container.setContainerClasses(options.classes);
+			}
+			if (options.orientation) {
+				container.setOrientation(options.orientation);
 			}
 			containers[container.getId()] = container;
 			container.setElement(el);
