@@ -1,7 +1,10 @@
 module.exports = function(grunt) {
 	grunt.initConfig({
 		jasmine : {
-			src : 'src/**/*.js',
+			src : [
+        'src/decent.js',
+        'src/**/*.js'
+      ],
 			options: {
 				specs : 'spec/**/*spec.js',
 				helpers: [
