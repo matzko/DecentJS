@@ -754,7 +754,7 @@
       allMatch = null;
       for (i in properties) {
         if ('class' == i.toLowerCase()) {
-          if (decent.hasClass(parentEl, properties[i])) {
+          if (hasClass(parentEl, properties[i])) {
             if (false !== allMatch) {
               allMatch = true;
             }

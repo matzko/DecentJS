@@ -222,4 +222,26 @@ describe("Testing core DecentJS functionality", function() {
       });
     });
   });
+
+  describe("insideMatchingElement: Determine whether one element is inside another", function() {
+    var theSubject = function() {
+      return DecentJS.insideMatchingElement(theElement, theProperties);
+    },
+    theAncestor = null,
+    theElement = null,
+    theProperties = {};
+
+    describe("when determining by the class of the parent", function() {
+      beforeEach(function(){
+        theProperties = {class: 'i-am-parent-class'};
+        var parentEl = affix('div[class="i-am-parent-class"]');
+        theAncestor = parentEl.get(0);
+        theElement = parentEl.affix('p[class="zee-paragraph"] a[href="/click/here"]').get(0);
+      });
+
+      it("returns the ancestor", function() {
+        expect(theSubject()).toEqual(theAncestor);
+      });
+    });
+  });
 });
