@@ -41,7 +41,9 @@ DecentStickyContainer.prototype = {
 				if (wrapper) {
 					try {
 							container.d(wrapper).fade(-1, function() {
-								wrapper.parentNode.removeChild(wrapper);
+								if (wrapper && wrapper.parentNode) {
+									wrapper.parentNode.removeChild(wrapper);
+								}
 							});
 					} catch (e) {}
 				}
