@@ -718,8 +718,17 @@
    * @return [boolean] Whether the given element has that class.
    */
   hasClass = function(el, className) {
-    var re = new RegExp('\\b' + className + '\\b');
-    return !! (el && re.exec('' + el.className));
+    if (el && el.className) {
+      var elementClasses = ('' + el.className).toLowerCase().split(/\s/),
+      searchTerm = ('' + className).toLowerCase(),
+      i;
+      for(i = 0; i < elementClasses.length; i++) {
+        if (elementClasses[i] == searchTerm) {
+          return true;
+        }
+      }
+    }
+    return false;
   },
 
   /**

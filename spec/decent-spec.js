@@ -12,4 +12,214 @@ describe("Testing core DecentJS functionality", function() {
       expect(DecentJS.gebid('nonexistent-id')).toEqual(null);
     });
   });
+
+  describe("hasClass: Determine whether a DOM element has a given class.", function() {
+    var theSubject = function() {
+      return DecentJS.hasClass(theElement, theClass);
+    }, theElement = null, theClass;
+
+    describe("when the element class contains a hyphenated string class with a substring containing the searched-for term", function() {
+      describe("when the class is at the beginning", function() {
+        beforeEach(function(){
+          theElement = affix('div[class="reload-on-close another-class"]').get(0);
+        });
+
+        describe("when searched-for class contains a hyphen", function() {
+          beforeEach(function(){
+            theClass = 'on-close';
+          });
+
+          it("doesn't find the class", function() {
+            expect(theSubject()).not.toBeTruthy();
+          });
+        });
+
+        describe("when searched-for class doesn't contain a hyphen", function() {
+          beforeEach(function(){
+            theClass = 'close';
+          });
+
+          it("doesn't find the class", function() {
+            expect(theSubject()).not.toBeTruthy();
+          });
+        });
+      });
+
+      describe("when the class is at the end", function() {
+        beforeEach(function(){
+          theElement = affix('div[class="one-class reload-on-close"]').get(0);
+        });
+
+        describe("when searched-for class contains a hyphen", function() {
+          beforeEach(function(){
+            theClass = 'on-close';
+          });
+
+          it("doesn't find the class", function() {
+            expect(theSubject()).not.toBeTruthy();
+          });
+        });
+
+        describe("when searched-for class doesn't contain a hyphen", function() {
+          beforeEach(function(){
+            theClass = 'close';
+          });
+
+          it("doesn't find the class", function() {
+            expect(theSubject()).not.toBeTruthy();
+          });
+        });
+      });
+
+      describe("when the class is in the middle", function() {
+        beforeEach(function(){
+          theElement = affix('div[class="one-class reload-on-close another-class"]').get(0);
+        });
+
+        describe("when searched-for class contains a hyphen", function() {
+          beforeEach(function(){
+            theClass = 'on-close';
+          });
+
+          it("doesn't find the class", function() {
+            expect(theSubject()).not.toBeTruthy();
+          });
+        });
+
+        describe("when searched-for class doesn't contain a hyphen", function() {
+          beforeEach(function(){
+            theClass = 'close';
+          });
+
+          it("doesn't find the class", function() {
+            expect(theSubject()).not.toBeTruthy();
+          });
+        });
+      });
+
+      describe("when the class is by itself", function() {
+        beforeEach(function(){
+          theElement = affix('div[class="reload-on-close"]').get(0);
+        });
+
+        describe("when searched-for class contains a hyphen", function() {
+          beforeEach(function(){
+            theClass = 'on-close';
+          });
+
+          it("doesn't find the class", function() {
+            expect(theSubject()).not.toBeTruthy();
+          });
+        });
+
+        describe("when searched-for class doesn't contain a hyphen", function() {
+          beforeEach(function(){
+            theClass = 'close';
+          });
+
+          it("doesn't find the class", function() {
+            expect(theSubject()).not.toBeTruthy();
+          });
+        });
+      });
+    });
+
+    describe("when the element class contains a searched-for class", function() {
+      describe("when the class is at the beginning", function() {
+        describe("when searched-for class contains a hyphen", function() {
+          beforeEach(function(){
+            theElement = affix('div[class="reload-on-close another-class"]').get(0);
+            theClass = 'reload-on-close';
+          });
+
+          it("finds the class", function() {
+            expect(theSubject()).toBeTruthy();
+          });
+        });
+
+        describe("when searched-for class doesn't contain a hyphen", function() {
+          beforeEach(function(){
+            theElement = affix('div[class="close another-class"]').get(0);
+            theClass = 'close';
+          });
+
+          it("finds the class", function() {
+            expect(theSubject()).toBeTruthy();
+          });
+        });
+      });
+
+      describe("when the class is at the end", function() {
+        describe("when searched-for class contains a hyphen", function() {
+          beforeEach(function(){
+            theElement = affix('div[class="one-class reload-on-close"]').get(0);
+            theClass = 'reload-on-close';
+          });
+
+          it("finds the class", function() {
+            expect(theSubject()).toBeTruthy();
+          });
+        });
+
+        describe("when searched-for class doesn't contain a hyphen", function() {
+          beforeEach(function(){
+            theElement = affix('div[class="one-class close"]').get(0);
+            theClass = 'close';
+          });
+
+          it("finds the class", function() {
+            expect(theSubject()).toBeTruthy();
+          });
+        });
+      });
+
+      describe("when the class is in the middle", function() {
+        describe("when searched-for class contains a hyphen", function() {
+          beforeEach(function(){
+            theElement = affix('div[class="one-class reload-on-close another-class"]').get(0);
+            theClass = 'reload-on-close';
+          });
+
+          it("finds the class", function() {
+            expect(theSubject()).toBeTruthy();
+          });
+        });
+
+        describe("when searched-for class doesn't contain a hyphen", function() {
+          beforeEach(function(){
+            theElement = affix('div[class="one-class close another-class"]').get(0);
+            theClass = 'close';
+          });
+
+          it("finds the class", function() {
+            expect(theSubject()).toBeTruthy();
+          });
+        });
+      });
+
+      describe("when the class is by itself", function() {
+        describe("when searched-for class contains a hyphen", function() {
+          beforeEach(function(){
+            theElement = affix('div[class="reload-on-close"]').get(0);
+            theClass = 'reload-on-close';
+          });
+
+          it("finds the class", function() {
+            expect(theSubject()).toBeTruthy();
+          });
+        });
+
+        describe("when searched-for class doesn't contain a hyphen", function() {
+          beforeEach(function(){
+            theElement = affix('div[class="close"]').get(0);
+            theClass = 'close';
+          });
+
+          it("finds the class", function() {
+            expect(theSubject()).toBeTruthy();
+          });
+        });
+      });
+    });
+  });
 });
