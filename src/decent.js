@@ -734,6 +734,32 @@
 	},
 
 	/**
+	 * Determine whether the given array contains the given element.
+	 *
+	 * @param [Array]  container The containing array.
+	 * @param [Object] item      The item to be found in the array.
+	 *
+	 * @return [Boolean] Whether the array contains the item.
+	 */
+	arrayContains = function(container, item) {
+		if (Array.prototype.indexOf) {
+			return !!(container && ('undefined' != typeof item) && container.indexOf && (-1 != container.indexOf(item)));
+		// functionality for older browsers
+		} else {
+			if (!container || 'undefined' == typeof item || 0 === container.length) {
+				return false;
+			} else {
+				for(var i = 0; i < container.length; i++) {
+					if (container[i] === item) {
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+	},
+
+	/**
 	 * Iterate over each child element with the corresponding class.
 	 *
 	 * @param [DOMElement] scope     The parent element.
@@ -823,6 +849,10 @@
 		removeClass(this.actionSubject, className);
 		return this;
 	}
+	core.prototype.arrayContains = function(item) {
+		arrayContains(this.actionSubject, item);
+		return this;
+	}
 	core.prototype.eachChildWithClass = function(className, callback) {
 		eachChildWithClass(this.actionSubject, className, callback);
 		return this;
@@ -906,6 +936,7 @@
 	DecentJS.addClass = addClass;
 	DecentJS.hasClass = hasClass;
 	DecentJS.removeClass = removeClass;
+	DecentJS.arrayContains = arrayContains;
 	DecentJS.eachChildWithClass = eachChildWithClass;
 	DecentJS.each = each;
 	DecentJS.getFormData = getFormData;
