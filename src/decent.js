@@ -734,6 +734,47 @@
 	},
 
 	/**
+	 * Determine whether the given element or one of its ancestors matches with the given qualities.
+	 *
+	 * @param [DOMElement] el         The element.
+	 * @param [Object]     properties The properties to look for, such as {class: 'some-matching-class'}
+	 */
+	insideMatchingElement = function(el, properties) {
+		var parentEl = el, i, allMatch = null;
+		while(parentEl) {
+			allMatch = null;
+			for (i in properties) {
+				if ('class' == i.toLowerCase()) {
+					if (decent.hasClass(parentEl, properties[i])) {
+						if (false !== allMatch) {
+							allMatch = true;
+						}
+					} else {
+						allMatch = false;
+						break;
+					}
+				} else {
+					if ('undefined' != typeof parentEl[i]) {
+						if (parentEl[i] == properties[i]) {
+							if (false !== allMatch) {
+								allMatch = true;
+							}
+						} else {
+							allMatch = false;
+							break;
+						}
+					}
+				}
+			}
+			if (true === allMatch) {
+				return parentEl;
+			}
+			parentEl = parentEl.parentNode;
+		}
+		return false;
+	},
+
+	/**
 	 * Determine whether the given array contains the given element.
 	 *
 	 * @param [Array]  container The containing array.
@@ -849,6 +890,10 @@
 		removeClass(this.actionSubject, className);
 		return this;
 	}
+	core.prototype.insideMatchingElement = function(properties) {
+		insideMatchingElement(this.actionSubject, properties);
+		return this;
+	}
 	core.prototype.arrayContains = function(item) {
 		arrayContains(this.actionSubject, item);
 		return this;
@@ -936,6 +981,7 @@
 	DecentJS.addClass = addClass;
 	DecentJS.hasClass = hasClass;
 	DecentJS.removeClass = removeClass;
+	DecentJS.insideMatchingElement = insideMatchingElement;
 	DecentJS.arrayContains = arrayContains;
 	DecentJS.eachChildWithClass = eachChildWithClass;
 	DecentJS.each = each;
