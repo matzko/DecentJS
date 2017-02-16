@@ -581,6 +581,23 @@ var DecentSticky = (function() {
 		return decent.debounce(repositionStickies, 500);
 	})(),
 
+
+	/**
+	 * Get a sticky container associated with the given element.
+	 *
+	 * @param [DOMElement] el The element associated with the sticky message.
+	 *
+	 * @return [DecentStickyContainer]
+	 */
+	getStickyFromElement = function(el) {
+		for (var i in containers) {
+			if (containers[i] && containers[i].getElement && (containers[i].getElement() == el)) {
+				return containers[i];
+			}
+		}
+		return null;
+	},
+
 	/**
 	 * Calculate the density of text in a given area.
 	 *
@@ -692,6 +709,7 @@ var DecentSticky = (function() {
 		clearStickies:clearStickies,
 		getElementWordDensity:getElementWordDensity,
 		getPotentialLocations:getPotentialLocations,
+		getStickyFromElement:getStickyFromElement,
 		getTextDensity:getTextDensity,
 		repositionStickiesDebouncedCallback:repositionStickiesDebouncedCallback,
 		repositionStickies:repositionStickies,
