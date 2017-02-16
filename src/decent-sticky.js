@@ -327,6 +327,7 @@ DecentStickyContainer.prototype = {
 								wrapper.parentNode.removeChild(wrapper);
 								container._cleared = true;
 								DecentStickyAction.unlockElement(theElement);
+								DecentSticky.clearContainer(container.getId());
 							}
 						});
 					})(self);
@@ -717,6 +718,12 @@ var DecentSticky = (function() {
 	w = window,
 	containers = {},
 
+	clearContainer = function(id) {
+		if (containers[id]) {
+			delete containers[id];
+		}
+	},
+
 	/**
 	 * Clear all the stickies.
 	 */
@@ -726,7 +733,6 @@ var DecentSticky = (function() {
 				containers[i].clear();
 			}
 		}
-		containers = {};
 	},
 
 	/**
@@ -949,6 +955,7 @@ var DecentSticky = (function() {
 	};
 
 	return {
+		clearContainer:clearContainer,
 		clearStickies:clearStickies,
 		getElementWordDensity:getElementWordDensity,
 		getPotentialLocations:getPotentialLocations,
